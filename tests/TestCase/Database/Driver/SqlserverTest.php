@@ -27,6 +27,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\TestCase;
 use InvalidArgumentException;
 use PDO;
+use PDOStatement;
 use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
@@ -224,6 +225,55 @@ class SqlserverTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Config setting "persistent" cannot be set to true, as the Sqlserver PDO driver does not support PDO::ATTR_PERSISTENT');
         $driver->connect();
+    }
+
+    /**
+     * Test setting/skipping of client side buffering options based on output of
+     * SelectQuery::isBufferedResultsEnabled()
+     *
+     * @return void
+     */
+    public function testPrepare(): void
+    {
+        $this->skipIf($this->missingExtension, 'pdo_sqlsrv is not installed.');
+
+        $driver = $this->getMockBuilder(Sqlserver::class)
+            ->onlyMethods(['getPdo'])
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $pdo = $this->getMockBuilder(PDO::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $statement = $this->getMockBuilder(PDOStatement::class)
+            ->getMock();
+
+        $connection = $this->getMockBuilder(Connection::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $driver->method('getPdo')
+            ->willReturn($pdo);
+
+        $pdo->expects($this->exactly(2))
+            ->method('prepare')
+            ->with(
+                ...self::withConsecutive(
+                    ['', [
+                        PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL,
+                        PDO::SQLSRV_ATTR_CURSOR_SCROLL_TYPE => PDO::SQLSRV_CURSOR_BUFFERED,
+                    ]],
+                    ['', []],
+                )
+            )
+            ->willReturn($statement);
+
+        $query = new SelectQuery($connection);
+        $driver->prepare($query);
+
+        $query->disableBufferedResults();
+        $driver->prepare($query);
     }
 
     /**
