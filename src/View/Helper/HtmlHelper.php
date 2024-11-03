@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Cake\View\Helper;
 
 use Cake\Core\Configure;
+use Cake\Http\MimeType;
 use Cake\View\Helper;
 use Cake\View\StringTemplateTrait;
 use function Cake\Core\h;
@@ -1016,8 +1017,7 @@ class HtmlHelper extends Helper
                     ];
                 }
                 if (!isset($source['type'])) {
-                    $ext = pathinfo($source['src'], PATHINFO_EXTENSION);
-                    $source['type'] = $this->_View->getResponse()->getMimeType($ext);
+                    $source['type'] = MimeType::getMimeTypeForFile($source['src']);
                 }
                 $source['src'] = $this->Url->assetUrl($source['src'], $options);
                 $sourceTags .= $this->formatTemplate('tagselfclosing', [
@@ -1040,8 +1040,7 @@ class HtmlHelper extends Helper
             if (is_array($path)) {
                 $mimeType = $path[0]['type'];
             } else {
-                $mimeType = $this->_View->getResponse()->getMimeType(pathinfo($path, PATHINFO_EXTENSION));
-                assert(is_string($mimeType));
+                $mimeType = MimeType::getMimeTypeForFile($path);
             }
             if (str_starts_with($mimeType, 'video/')) {
                 $tag = 'video';
