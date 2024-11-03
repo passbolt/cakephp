@@ -17,19 +17,18 @@ permissions:
 
 jobs:
   testsuite:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
         php-version: ['8.1', '8.3']
         db-type: [sqlite, pgsql]
-        prefer-lowest: ['']
         include:
           - php-version: '8.1'
             db-type: 'mariadb'
           - php-version: '8.1'
             db-type: 'mysql'
-            prefer-lowest: 'prefer-lowest'
+            dependencies: 'lowest'
           - php-version: '8.2'
             db-type: 'mysql'
           - php-version: '8.3'
@@ -49,13 +48,13 @@ jobs:
 
     steps:
     - name: Setup MySQL 8.0
-      if: matrix.db-type == 'mysql' && matrix.prefer-lowest != 'prefer-lowest'
+      if: matrix.db-type == 'mysql' && matrix.dependencies != 'lowest'
       run: |
         sudo service mysql start
         mysql -h 127.0.0.1 -u root -proot -e 'CREATE DATABASE cakephp;'
 
     - name: Setup MySQL 5.7
-      if: matrix.db-type == 'mysql' && matrix.prefer-lowest == 'prefer-lowest'
+      if: matrix.db-type == 'mysql' && matrix.dependencies == 'lowest'
       run: docker run --rm --name=mysqld -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=cakephp -p 3306:3306 -d mysql:5.7 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
 
     - name: Setup PostgreSQL latest
@@ -78,34 +77,16 @@ jobs:
         ini-values: apc.enable_cli = 1, zend.assertions = 1
         coverage: pcov
 
-    - name: Get composer cache directory
-      id: composer-cache
-      run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
-
-    - name: Get date part for cache key
-      id: key-date
-      run: echo "date=$(date +'%Y-%m')" >> $GITHUB_OUTPUT
-
-    - name: Cache composer dependencies
-      uses: actions/cache@v4
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ steps.key-date.outputs.date }}-${{ hashFiles('composer.json') }}-${{ matrix.prefer-lowest }}
-
     - name: Install packages
       run: |
         sudo locale-gen da_DK.UTF-8
         sudo locale-gen de_DE.UTF-8
 
     - name: Composer install
-      run: |
-        if ${{ matrix.prefer-lowest == 'prefer-lowest' }}; then
-          composer update --prefer-lowest --prefer-stable
-        elif ${{ matrix.php-version == '8.4' }}; then
-          composer update --ignore-platform-req=php
-        else
-          composer update
-        fi
+      uses: ramsey/composer-install@v3
+      with:
+        dependency-versions: ${{ matrix.dependencies }}
+        composer-options: "${{ matrix.composer-options }}"
 
     - name: Setup problem matchers for PHPUnit
       if: matrix.php-version == '8.1' && matrix.db-type == 'mysql'
@@ -183,18 +164,8 @@ jobs:
         SqlLocalDB info MSSQLLocalDB
         sqlcmd -S "(localdb)\MSSQLLocalDB" -Q "create database cakephp;"
 
-    - name: Get composer cache directory
-      id: composer-cache
-      run: echo "dir=$(composer config cache-files-dir)" >> $env:GITHUB_OUTPUT
-
-    - name: Cache composer dependencies
-      uses: actions/cache@v4
-      with:
-        path: ${{ steps.composer-cache.outputs.dir }}
-        key: ${{ runner.os }}-composer-${{ steps.key-date.outputs.date }}-${{ hashFiles('composer.json') }}-${{ matrix.prefer-lowest }}
-
     - name: Composer install
-      run: composer update
+      uses: ramsey/composer-install@v3
 
     - name: Run PHPUnit
       env:
@@ -212,7 +183,7 @@ jobs:
 
   cs-stan:
     name: Coding Standard & Static Analysis
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     env:
       PHIVE_KEYS: 'CF1A108D0E7AE720,51C67305FFC2E5C0,12CE0F1D262429A5'
