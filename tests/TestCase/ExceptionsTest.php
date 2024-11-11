@@ -21,10 +21,9 @@ namespace Cake\Test\TestCase;
 use Cake\Console\Exception\ConsoleException;
 use Cake\Console\Exception\MissingHelperException;
 use Cake\Console\Exception\StopException;
-use Cake\Controller\Exception\AuthSecurityException;
+use Cake\Controller\Exception\FormProtectionException;
 use Cake\Controller\Exception\MissingActionException;
 use Cake\Controller\Exception\MissingComponentException;
-use Cake\Controller\Exception\SecurityException;
 use Cake\Core\Exception\CakeException;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Database\Exception\DatabaseException;
@@ -182,10 +181,9 @@ class ExceptionsTest extends TestCase
             [ConsoleException::class, 1],
             [MissingHelperException::class, 1],
             [StopException::class, 1],
-            [AuthSecurityException::class, 400],
+            [FormProtectionException::class, 400],
             [MissingActionException::class, 0],
             [MissingComponentException::class, 0],
-            [SecurityException::class, 400],
             [CakeException::class, 0],
             [MissingPluginException::class, 0],
             [DatabaseException::class, 0],

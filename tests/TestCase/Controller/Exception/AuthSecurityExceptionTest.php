@@ -21,6 +21,8 @@ use Cake\TestSuite\TestCase;
 
 /**
  * AuthSecurityException Test class
+ *
+ * @deprecated
  */
 class AuthSecurityExceptionTest extends TestCase
 {
