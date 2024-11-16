@@ -1065,9 +1065,15 @@ class FormHelper extends Helper
         }
         unset($options['templates']);
 
-        // Hidden inputs don't need aria.
-        // Multiple checkboxes can't have aria generated for them at this layer.
-        if ($options['type'] !== 'hidden' && ($options['type'] !== 'select' && !isset($options['multiple']))) {
+        $addAriaAttributes = true;
+        if (
+            $options['type'] === 'hidden' ||
+            ($options['type'] === 'select' && isset($options['multiple']) && $options['multiple'] === 'checkbox')
+        ) {
+            $addAriaAttributes = false;
+        }
+
+        if ($addAriaAttributes) {
             $isFieldError = $this->isFieldError($fieldName);
             $options += [
                 'aria-invalid' => $isFieldError ? 'true' : null,
