@@ -968,8 +968,8 @@ abstract class TestCase extends BaseTestCase
             $builder->addMethods($nonExistingMethods);
         }
 
-        /** @var \Cake\ORM\Table $mock */
         $mock = $builder->getMock();
+        assert($mock instanceof Table);
 
         if (empty($options['entityClass']) && $mock->getEntityClass() === Entity::class) {
             $parts = explode('\\', $className);
