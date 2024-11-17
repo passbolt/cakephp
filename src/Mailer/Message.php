@@ -962,7 +962,7 @@ class Message implements JsonSerializable
     /**
      * Get headers as string.
      *
-     * @param list<string> $include List of headers.
+     * @param array<string> $include List of headers.
      * @param string $eol End of line string for concatenating headers.
      * @param \Closure|null $callback Callback to run each header value through before stringifying.
      * @return string

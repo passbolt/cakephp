@@ -172,7 +172,7 @@ class RouteBuilder
      * Future routes connected in through this builder will have the connected
      * extensions applied. However, setting extensions does not modify existing routes.
      *
-     * @param list<string>|string $extensions The extensions to set.
+     * @param array<string>|string $extensions The extensions to set.
      * @return $this
      */
     public function setExtensions(array|string $extensions)
@@ -195,7 +195,7 @@ class RouteBuilder
     /**
      * Add additional extensions to what is already in current scope
      *
-     * @param list<string>|string $extensions One or more extensions to add
+     * @param array<string>|string $extensions One or more extensions to add
      * @return $this
      */
     public function addExtensions(array|string $extensions)
@@ -1018,7 +1018,7 @@ class RouteBuilder
      * Apply a set of middleware to a group
      *
      * @param string $name Name of the middleware group
-     * @param list<string> $middlewareNames Names of the middleware
+     * @param array<string> $middlewareNames Names of the middleware
      * @return $this
      */
     public function middlewareGroup(string $name, array $middlewareNames)
