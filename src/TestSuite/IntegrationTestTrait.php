@@ -149,7 +149,7 @@ trait IntegrationTestTrait
 
     /**
      * Boolean flag for whether the request should have
-     * a SecurityComponent token added.
+     * a FormProtectionComponent token added.
      *
      * @var bool
      */
@@ -222,9 +222,9 @@ trait IntegrationTestTrait
     }
 
     /**
-     * Calling this method will enable a SecurityComponent
+     * Calling this method will enable a FormProtectionComponent
      * compatible token to be added to request data. This
-     * lets you easily test actions protected by SecurityComponent.
+     * lets you easily test actions protected by FormProtectionComponent.
      *
      * @return void
      */
@@ -236,7 +236,7 @@ trait IntegrationTestTrait
     /**
      * Set list of fields that are excluded from field validation.
      *
-     * @param list<string> $unlockedFields List of fields that are excluded from field validation.
+     * @param array<string> $unlockedFields List of fields that are excluded from field validation.
      * @return void
      */
     public function setUnlockedFields(array $unlockedFields = []): void
@@ -719,7 +719,7 @@ trait IntegrationTestTrait
     }
 
     /**
-     * Add the CSRF and Security Component tokens if necessary.
+     * Add the CSRF and FormProtectionComponent tokens if necessary.
      *
      * @param string $url The URL the form is being submitted on.
      * @param array $data The request body data.

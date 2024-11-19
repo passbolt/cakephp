@@ -733,7 +733,7 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
      * Each view class must implement the `getContentType()` hook method
      * to participate in negotiation.
      *
-     * @param list<string> $viewClasses View classes list.
+     * @param array<string> $viewClasses View classes list.
      * @return $this
      * @see \Cake\Http\ContentTypeNegotiation
      * @since 4.5.0

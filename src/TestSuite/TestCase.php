@@ -352,7 +352,7 @@ abstract class TestCase extends BaseTestCase
      *
      * Useful in test case teardown methods.
      *
-     * @param list<string> $names A list of plugins you want to remove.
+     * @param array<string> $names A list of plugins you want to remove.
      * @return void
      */
     public function removePlugins(array $names = []): void
@@ -924,7 +924,7 @@ abstract class TestCase extends BaseTestCase
      * Mock a model, maintain fixtures and table association
      *
      * @param string $alias The model to get a mock for.
-     * @param list<string> $methods The list of methods to mock
+     * @param array<string> $methods The list of methods to mock
      * @param array<string, mixed> $options The config data for the mock's constructor.
      * @throws \Cake\ORM\Exception\MissingTableClassException
      * @return \Cake\ORM\Table|\PHPUnit\Framework\MockObject\MockObject

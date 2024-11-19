@@ -593,7 +593,7 @@ class Mailer implements EventListenerInterface
     /**
      * Converts given value to string
      *
-     * @param list<string>|string $value The value to convert
+     * @param array<string>|string $value The value to convert
      * @return string
      */
     protected function flatten(array|string $value): string

@@ -28,6 +28,9 @@ use DOMDocument;
 use Exception;
 use PHPUnit\Framework\Attributes\DataProvider;
 use SimpleXMLElement;
+use TestApp\Model\Enum\ArticleStatus;
+use TestApp\Model\Enum\NonBacked;
+use TestApp\Model\Enum\Priority;
 use TypeError;
 
 /**
@@ -1134,6 +1137,35 @@ XML;
             ],
         ];
         $expected = '<' . '?xml version="1.0" encoding="UTF-8"?><root xmlns:ns="http://cakephp.org"/>';
+        $xmlResponse = Xml::fromArray($xml);
+        $this->assertXmlStringEqualsXmlString($expected, $xmlResponse->asXML());
+    }
+
+    /**
+     * Tests that Enums don't blow up SimpleXml.
+     */
+    public function testEnum(): void
+    {
+        $xml = [
+            'root' => [
+                'tag' => [
+                    'xmlns:pref' => 'http://cakephp.org',
+                    'backed-int' => Priority::Medium,
+                    'backend-string' => ArticleStatus::Published,
+                    'non-backed' => NonBacked::Basic,
+                ],
+            ],
+        ];
+        $expected = <<<XML
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+  <tag xmlns:pref="http://cakephp.org">
+     <backed-int>2</backed-int>
+     <backend-string>Y</backend-string>
+     <non-backed>Basic</non-backed>
+  </tag>
+</root>
+XML;
         $xmlResponse = Xml::fromArray($xml);
         $this->assertXmlStringEqualsXmlString($expected, $xmlResponse->asXML());
     }
