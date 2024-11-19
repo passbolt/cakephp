@@ -24,6 +24,11 @@
       <code><![CDATA[$callback($value, $key, $items)]]></code>
     </TooManyArguments>
   </file>
+  <file src="src/Command/RoutesGenerateCommand.php">
+    <InvalidArgument>
+      <code><![CDATA[$args->getArguments()]]></code>
+    </InvalidArgument>
+  </file>
   <file src="src/Console/TestSuite/StubConsoleOutput.php">
     <InvalidPropertyAssignmentValue>
       <code><![CDATA[$this->_output]]></code>
@@ -62,6 +67,11 @@
     <UndefinedInterfaceMethod>
       <code><![CDATA[events]]></code>
     </UndefinedInterfaceMethod>
+  </file>
+  <file src="src/Http/Client/Adapter/Stream.php">
+    <InvalidOperand>
+      <code><![CDATA[$indexes[$i + 1]]]></code>
+    </InvalidOperand>
   </file>
   <file src="src/I18n/Date.php">
     <ImpureFunctionCall>
@@ -191,7 +201,7 @@
   </file>
   <file src="src/View/Exception/MissingCellTemplateException.php">
     <ImplementedReturnTypeMismatch>
-      <code><![CDATA[array{name: string, file: string, paths: list<string>}]]></code>
+      <code><![CDATA[array{name: string, file: string, paths: array<string>}]]></code>
     </ImplementedReturnTypeMismatch>
   </file>
   <file src="src/View/Helper/PaginatorHelper.php">

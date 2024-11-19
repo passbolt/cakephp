@@ -37,7 +37,7 @@ class TestFixtureTest extends TestCase
     /**
      * Fixtures for this test.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = ['core.Articles', 'core.Posts'];
 

@@ -198,7 +198,7 @@ class TestFixture implements FixtureInterface
         foreach ($this->records as $record) {
             $fields = array_merge($fields, array_intersect(array_keys($record), $columns));
         }
-        /** @var list<string> $fields */
+        /** @var array<string> $fields */
         $fields = array_values(array_unique($fields));
         foreach ($fields as $field) {
             $column = $this->_schema->getColumn($field);

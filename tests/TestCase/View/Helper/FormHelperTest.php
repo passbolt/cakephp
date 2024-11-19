@@ -66,7 +66,7 @@ class FormHelperTest extends TestCase
     /**
      * Fixtures to be used
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = ['core.Articles', 'core.Comments'];
 

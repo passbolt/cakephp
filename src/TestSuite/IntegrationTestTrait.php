@@ -186,7 +186,7 @@ trait IntegrationTestTrait
     /**
      * List of fields that are excluded from field validation.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_unlockedFields = [];
 

@@ -79,7 +79,7 @@ class RouteCollection
     /**
      * Route extensions
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_extensions = [];
 
@@ -185,7 +185,7 @@ class RouteCollection
      * and newer style urls containing '_name'
      *
      * @param array $url The url to match.
-     * @return list<string> The set of names of the url
+     * @return array<string> The set of names of the url
      */
     protected function _getNames(array $url): array
     {
@@ -340,7 +340,7 @@ class RouteCollection
     /**
      * Get the extensions that can be handled.
      *
-     * @return list<string> The valid extensions.
+     * @return array<string> The valid extensions.
      */
     public function getExtensions(): array
     {
