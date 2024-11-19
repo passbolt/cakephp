@@ -2583,7 +2583,7 @@ class FormHelper extends Helper
     /**
      * Validate value sources.
      *
-     * @param list<string> $sources A list of strings identifying a source.
+     * @param array<string> $sources A list of strings identifying a source.
      * @return void
      * @throws \InvalidArgumentException If sources list contains invalid value.
      */
@@ -2609,7 +2609,7 @@ class FormHelper extends Helper
      * Order sets priority.
      *
      * @see FormHelper::$supportedValueSources for valid values.
-     * @param list<string>|string $sources A string or a list of strings identifying a source.
+     * @param array<string>|string $sources A string or a list of strings identifying a source.
      * @return $this
      * @throws \InvalidArgumentException If sources list contains invalid value.
      */

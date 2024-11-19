@@ -162,7 +162,7 @@ class Route
     /**
      * Set the supported extensions for this route.
      *
-     * @param list<string> $extensions The extensions to set.
+     * @param array<string> $extensions The extensions to set.
      * @return $this
      */
     public function setExtensions(array $extensions)
@@ -185,7 +185,7 @@ class Route
     /**
      * Set the accepted HTTP methods for this route.
      *
-     * @param list<string> $methods The HTTP methods to accept.
+     * @param array<string> $methods The HTTP methods to accept.
      * @return $this
      * @throws \InvalidArgumentException When methods are not in `VALID_METHODS` list.
      */
@@ -199,7 +199,7 @@ class Route
     /**
      * Normalize method names to upper case and validate that they are valid HTTP methods.
      *
-     * @param list<string>|string $methods Methods.
+     * @param array<string>|string $methods Methods.
      * @return list<string>|string
      * @throws \InvalidArgumentException When methods are not in `VALID_METHODS` list.
      */
@@ -255,7 +255,7 @@ class Route
     /**
      * Set the names of parameters that will be converted into passed parameters
      *
-     * @param list<string> $names The names of the parameters that should be passed.
+     * @param array<string> $names The names of the parameters that should be passed.
      * @return $this
      */
     public function setPass(array $names)
