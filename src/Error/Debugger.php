@@ -277,7 +277,7 @@ class Debugger
      * Get the frames from $exception that are not present in $parent
      *
      * @param \Throwable $exception The exception to get frames from.
-     * @param ?\Throwable $parent The parent exception to compare frames with.
+     * @param \Throwable|null $parent The parent exception to compare frames with.
      * @return array An array of frame structures.
      */
     public static function getUniqueFrames(Throwable $exception, ?Throwable $parent): array
