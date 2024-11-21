@@ -27,7 +27,7 @@ class NumericPaginatorTest extends TestCase
     /**
      * fixtures property
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = [
         'core.Posts', 'core.Articles', 'core.Tags', 'core.ArticlesTags',

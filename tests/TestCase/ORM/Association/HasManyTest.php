@@ -46,7 +46,7 @@ class HasManyTest extends TestCase
     /**
      * Fixtures
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = [
         'core.Comments',

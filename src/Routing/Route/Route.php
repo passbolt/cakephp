@@ -84,7 +84,7 @@ class Route
     /**
      * List of connected extensions for this route.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_extensions = [];
 
@@ -98,7 +98,7 @@ class Route
     /**
      * Valid HTTP methods.
      *
-     * @var list<string>
+     * @var array<string>
      */
     public const VALID_METHODS = ['GET', 'PUT', 'POST', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'];
 
@@ -162,7 +162,7 @@ class Route
     /**
      * Set the supported extensions for this route.
      *
-     * @param list<string> $extensions The extensions to set.
+     * @param array<string> $extensions The extensions to set.
      * @return $this
      */
     public function setExtensions(array $extensions)
@@ -175,7 +175,7 @@ class Route
     /**
      * Get the supported extensions for this route.
      *
-     * @return list<string>
+     * @return array<string>
      */
     public function getExtensions(): array
     {
@@ -185,7 +185,7 @@ class Route
     /**
      * Set the accepted HTTP methods for this route.
      *
-     * @param list<string> $methods The HTTP methods to accept.
+     * @param array<string> $methods The HTTP methods to accept.
      * @return $this
      * @throws \InvalidArgumentException When methods are not in `VALID_METHODS` list.
      */
@@ -199,8 +199,8 @@ class Route
     /**
      * Normalize method names to upper case and validate that they are valid HTTP methods.
      *
-     * @param list<string>|string $methods Methods.
-     * @return list<string>|string
+     * @param array<string>|string $methods Methods.
+     * @return array<string>|string
      * @throws \InvalidArgumentException When methods are not in `VALID_METHODS` list.
      */
     protected function normalizeAndValidateMethods(array|string $methods): array|string
@@ -255,7 +255,7 @@ class Route
     /**
      * Set the names of parameters that will be converted into passed parameters
      *
-     * @param list<string> $names The names of the parameters that should be passed.
+     * @param array<string> $names The names of the parameters that should be passed.
      * @return $this
      */
     public function setPass(array $names)
@@ -583,7 +583,7 @@ class Route
      *
      * @param string $args A string with the passed params. eg. /1/foo
      * @param array $context The current route context, which should contain controller/action keys.
-     * @return list<string> Array of passed args.
+     * @return array<string> Array of passed args.
      */
     protected function _parseArgs(string $args, array $context): array
     {

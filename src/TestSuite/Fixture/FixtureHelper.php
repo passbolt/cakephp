@@ -37,7 +37,7 @@ class FixtureHelper
     /**
      * Finds fixtures from their TestCase names such as 'core.Articles'.
      *
-     * @param list<string> $fixtureNames Fixture names from test case
+     * @param array<string> $fixtureNames Fixture names from test case
      * @return array<\Cake\Datasource\FixtureInterface>
      */
     public function loadFixtures(array $fixtureNames): array
@@ -267,7 +267,7 @@ class FixtureHelper
      *
      * @param \Cake\Database\Connection $connection Database connection
      * @param \Cake\Datasource\FixtureInterface $fixture Database fixture
-     * @return list<string>
+     * @return array<string>
      */
     protected function getForeignReferences(Connection $connection, FixtureInterface $fixture): array
     {

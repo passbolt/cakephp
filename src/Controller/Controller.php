@@ -184,7 +184,7 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
     /**
      * View classes for content negotiation.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $viewClasses = [];
 
@@ -720,7 +720,7 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
      * to participate in negotiation.
      *
      * @see \Cake\Http\ContentTypeNegotiation
-     * @return list<string>
+     * @return array<string>
      */
     public function viewClasses(): array
     {
@@ -733,7 +733,7 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
      * Each view class must implement the `getContentType()` hook method
      * to participate in negotiation.
      *
-     * @param list<string> $viewClasses View classes list.
+     * @param array<string> $viewClasses View classes list.
      * @return $this
      * @see \Cake\Http\ContentTypeNegotiation
      * @since 4.5.0

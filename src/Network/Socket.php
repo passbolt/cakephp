@@ -96,7 +96,7 @@ class Socket
      * Used to capture connection warnings which can happen when there are
      * SSL errors for example.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_connectionErrors = [];
 
@@ -324,7 +324,7 @@ class Socket
     /**
      * Get all IP addresses associated with the current connection.
      *
-     * @return list<string> IP addresses
+     * @return array<string> IP addresses
      */
     public function addresses(): array
     {

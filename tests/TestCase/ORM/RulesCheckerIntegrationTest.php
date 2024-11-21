@@ -38,7 +38,7 @@ class RulesCheckerIntegrationTest extends TestCase
     /**
      * Fixtures to be loaded
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = [
         'core.Articles', 'core.Tags', 'core.ArticlesTags', 'core.Authors', 'core.Comments',

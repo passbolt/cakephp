@@ -66,7 +66,7 @@ class FormHelperTest extends TestCase
     /**
      * Fixtures to be used
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = ['core.Articles', 'core.Comments'];
 
@@ -2376,6 +2376,7 @@ class FormHelperTest extends TestCase
             'Article' => [
                 'title' => 'error message',
                 'content' => 'some <strong>test</strong> data with <a href="#">HTML</a> chars',
+                'user_id' => 'error message',
             ],
         ];
         $this->Form->create($this->article);
@@ -2395,6 +2396,36 @@ class FormHelperTest extends TestCase
                 'aria-describedby' => 'article-title-error',
             ],
             ['div' => ['class' => 'error-message', 'id' => 'article-title-error']],
+            'error message',
+            '/div',
+            '/div',
+        ];
+        $this->assertHtml($expected, $result);
+
+        $result = $this->Form->control('Article.user_id', [
+            'type' => 'select',
+            'options' => ['1' => 'One', '2' => 'Two'],
+        ]);
+        $expected = [
+            'div' => ['class' => 'input select error'],
+            'label' => ['for' => 'article-user-id'],
+            'User',
+            '/label',
+            ['select' => [
+                'name' => 'Article[user_id]',
+                'id' => 'article-user-id',
+                'class' => 'form-error',
+                'aria-invalid' => 'true',
+                'aria-describedby' => 'article-user-id-error',
+            ]],
+                ['option' => ['value' => '1']],
+                    'One',
+                '/option',
+                ['option' => ['value' => '2']],
+                    'Two',
+                '/option',
+            '/select',
+            ['div' => ['class' => 'error-message', 'id' => 'article-user-id-error']],
             'error message',
             '/div',
             '/div',
