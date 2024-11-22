@@ -109,7 +109,7 @@ class RoutingMiddleware implements MiddlewareInterface
             return new RedirectResponse(
                 $e->getMessage(),
                 $e->getCode(),
-                $e->getHeaders()
+                $e->getHeaders(),
             );
         }
         $matching = Router::getRouteCollection()->getMiddleware($middleware);

@@ -206,7 +206,7 @@ class Debugger
             throw new InvalidArgumentException(sprintf(
                 'Unknown editor `%s`. Known editors are `%s`.',
                 $name,
-                $known
+                $known,
             ));
         }
         $instance->setConfig('editor', $name);
@@ -226,7 +226,7 @@ class Debugger
         if (!isset($instance->editors[$editor])) {
             throw new InvalidArgumentException(sprintf(
                 'Cannot format editor URL `%s` is not a known editor.',
-                $editor
+                $editor,
             ));
         }
 
@@ -269,7 +269,7 @@ class Debugger
 
         Log::write(
             $level,
-            "\n" . $source . static::exportVarAsPlainText($var, $maxDepth)
+            "\n" . $source . static::exportVarAsPlainText($var, $maxDepth),
         );
     }
 
@@ -277,7 +277,7 @@ class Debugger
      * Get the frames from $exception that are not present in $parent
      *
      * @param \Throwable $exception The exception to get frames from.
-     * @param ?\Throwable $parent The parent exception to compare frames with.
+     * @param \Throwable|null $parent The parent exception to compare frames with.
      * @return array An array of frame structures.
      */
     public static function getUniqueFrames(Throwable $exception, ?Throwable $parent): array
@@ -401,26 +401,27 @@ class Debugger
             if (in_array($signature, $options['exclude'], true)) {
                 continue;
             }
-            if ($options['format'] === 'shortPoints') {
+
+            $format = $options['format'];
+            if ($format === 'shortPoints') {
                 $back[] = [
                     'file' => self::trimPath($frame['file']),
                     'line' => $frame['line'],
                     'reference' => $reference,
                 ];
-            } elseif ($options['format'] === 'points') {
+            } elseif ($format === 'points') {
                 $back[] = ['file' => $frame['file'], 'line' => $frame['line'], 'reference' => $reference];
-            } elseif ($options['format'] === 'array') {
+            } elseif ($format === 'array') {
                 if (!$options['args']) {
                     unset($frame['args']);
                 }
                 $back[] = $frame;
-            } elseif ($options['format'] === 'text') {
+            } elseif ($format === 'text') {
                 $path = static::trimPath($frame['file']);
                 $back[] = sprintf('%s - %s, line %d', $reference, $path, $frame['line']);
             } else {
-                debug($options);
                 throw new InvalidArgumentException(
-                    "Invalid trace format of `{$options['format']}` chosen. Must be one of `array`, `points` or `text`."
+                    "Invalid trace format of `$format` chosen. Must be one of `array`, `points` or `text`.",
                 );
             }
         }
@@ -529,7 +530,7 @@ class Debugger
             return str_replace(
                 ['&lt;?php&nbsp;<br/>', '&lt;?php&nbsp;<br />', '&lt;?php '],
                 '',
-                $highlight
+                $highlight,
             );
         }
 
@@ -561,7 +562,7 @@ class Debugger
             throw new CakeException(sprintf(
                 'The `%s` formatter does not implement `%s`.',
                 $class,
-                FormatterInterface::class
+                FormatterInterface::class,
             ));
         }
 
@@ -607,7 +608,7 @@ class Debugger
     public static function exportVarAsPlainText(mixed $var, int $maxDepth = 3): string
     {
         return (new TextFormatter())->dump(
-            static::export($var, new DebugContext($maxDepth))
+            static::export($var, new DebugContext($maxDepth)),
         );
     }
 
@@ -690,7 +691,7 @@ class Debugger
         } else {
             $items[] = new ArrayItemNode(
                 new ScalarNode('string', ''),
-                new SpecialNode('[maximum depth reached]')
+                new SpecialNode('[maximum depth reached]'),
             );
         }
 
@@ -737,7 +738,7 @@ class Debugger
                     $value = $outputMask[$key];
                 }
                 $node->addProperty(
-                    new PropertyNode((string)$key, 'public', static::export($value, $context->withAddedDepth()))
+                    new PropertyNode((string)$key, 'public', static::export($value, $context->withAddedDepth())),
                 );
             }
 
@@ -764,8 +765,8 @@ class Debugger
                         new PropertyNode(
                             $reflectionProperty->getName(),
                             $visibility,
-                            $value
-                        )
+                            $value,
+                        ),
                     );
                 }
             }
@@ -862,7 +863,7 @@ class Debugger
             trigger_error(
                 'Please change the value of `Security.salt` in `ROOT/config/app_local.php` ' .
                 'to a random value of at least 32 characters.',
-                E_USER_NOTICE
+                E_USER_NOTICE,
             );
         }
     }
