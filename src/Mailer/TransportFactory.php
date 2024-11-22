@@ -69,9 +69,9 @@ class TransportFactory
     }
 
     /**
-     * Finds and builds the instance of the required tranport class.
+     * Finds and builds the instance of the required transport class.
      *
-     * @param string $name Name of the config array that needs a tranport instance built
+     * @param string $name Name of the config array that needs a transport instance built
      * @return void
      * @throws \InvalidArgumentException When a tranport cannot be created.
      */

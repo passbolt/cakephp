@@ -336,7 +336,7 @@ class DateTimeTypeTest extends TestCase
     }
 
     /**
-     * Test that the marhsalled datetime instance always has the system's default timezone.
+     * Test that the marshalled datetime instance always has the system's default timezone.
      */
     public function testMarshalDateTimeInstance(): void
     {

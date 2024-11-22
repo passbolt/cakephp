@@ -72,7 +72,8 @@ class RadioWidget extends BasicWidget
      */
     public function __construct(StringTemplate $templates, LabelWidget $label)
     {
-        $this->_templates = $templates;
+        parent::__construct($templates);
+
         $this->_label = $label;
     }
 
