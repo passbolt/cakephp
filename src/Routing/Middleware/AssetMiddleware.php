@@ -87,7 +87,7 @@ class AssetMiddleware implements MiddlewareInterface
                 ->withStatus(304)
                 ->withHeader(
                     'Last-Modified',
-                    date(DATE_RFC850, $modifiedTime)
+                    date(DATE_RFC850, $modifiedTime),
                 );
         }
 

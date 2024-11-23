@@ -85,9 +85,9 @@ trait LogTestTrait
 
     /**
      * @param string $level The level of the expected message
+     * @param string $expectedMessage The message which should be inside the log engine
      * @param string|null $scope The scope of the expected message. If a message has
      *   multiple scopes, the provided scope must be within the message's set.
-     * @param string $expectedMessage The message which should be inside the log engine
      * @param string $failMsg The error message if the message was not in the log engine
      * @return void
      */
