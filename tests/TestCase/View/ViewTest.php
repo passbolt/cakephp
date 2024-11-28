@@ -1140,7 +1140,7 @@ class ViewTest extends TestCase
     public function testGetTemplateException(): void
     {
         $this->expectException(CakeException::class);
-        $this->expectExceptionMessage('Template name not provided');
+        $this->expectExceptionMessage('Template file `` could not be found.');
         $view = new View();
         $view->render();
     }
