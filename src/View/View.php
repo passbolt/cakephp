@@ -1348,7 +1348,7 @@ class View implements EventDispatcherInterface
         $name ??= $this->template;
 
         if (!$name) {
-            throw new CakeException('Template name not provided');
+            throw new MissingTemplateException('');
         }
 
         [$plugin, $name] = $this->pluginSplit($name);
