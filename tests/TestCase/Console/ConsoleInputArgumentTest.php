@@ -76,7 +76,7 @@ class ConsoleInputArgumentTest extends TestCase
             false,
             ['red', 'blue'],
             'red',
-            ' '
+            ' ',
         );
     }
 
@@ -91,7 +91,7 @@ class ConsoleInputArgumentTest extends TestCase
             true,
             ['red', 'blue'],
             'red',
-            ';'
+            ';',
         );
         $output = $input->help(72);
         $this->assertStringStartsWith('colors ', $output);
@@ -142,7 +142,7 @@ class ConsoleInputArgumentTest extends TestCase
             'color',
             '',
             false,
-            []
+            [],
         );
         $this->assertTrue($input->validChoice('yellow'));
     }
@@ -156,7 +156,7 @@ class ConsoleInputArgumentTest extends TestCase
             'color',
             '',
             false,
-            ['red', 'blue']
+            ['red', 'blue'],
         );
         $this->expectException(ConsoleException::class);
         $this->expectExceptionMessage('`yellow` is not a valid value for `color`. Please use one of `red|blue`');
@@ -172,7 +172,7 @@ class ConsoleInputArgumentTest extends TestCase
             'color',
             '',
             false,
-            ['red', 'blue']
+            ['red', 'blue'],
         );
         $this->assertTrue($input->validChoice('red'));
     }
@@ -205,7 +205,7 @@ class ConsoleInputArgumentTest extends TestCase
             false,
             $choices,
             null,
-            $separator
+            $separator,
         );
 
         $success = $input->validChoice($value);
@@ -236,7 +236,7 @@ class ConsoleInputArgumentTest extends TestCase
             false,
             $choices,
             null,
-            $separator
+            $separator,
         );
 
         $this->expectException(ConsoleException::class);
