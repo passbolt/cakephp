@@ -48,7 +48,7 @@ class SecurityExceptionTest extends TestCase
         $this->assertSame(
             'secure',
             $this->securityException->getType(),
-            '::getType should always return the type of `secure`.'
+            '::getType should always return the type of `secure`.',
         );
     }
 
@@ -62,7 +62,7 @@ class SecurityExceptionTest extends TestCase
         $this->assertSame(
             $sampleMessage,
             $this->securityException->getMessage(),
-            '::getMessage should always return the message set.'
+            '::getMessage should always return the message set.',
         );
     }
 
@@ -76,7 +76,7 @@ class SecurityExceptionTest extends TestCase
         $this->assertSame(
             $sampleReason,
             $this->securityException->getReason(),
-            '::getReason should always return the reason set.'
+            '::getReason should always return the reason set.',
         );
     }
 }

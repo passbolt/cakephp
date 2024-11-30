@@ -20,7 +20,7 @@ class AssociationTableMixinClassReflectionExtension implements PropertiesClassRe
     private ReflectionProvider $reflectionProvider;
 
     public function __construct(
-        ReflectionProvider $reflectionProvider
+        ReflectionProvider $reflectionProvider,
     ) {
         $this->reflectionProvider = $reflectionProvider;
     }

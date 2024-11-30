@@ -50,7 +50,7 @@ class SecurityException extends BadRequestException
     {
         deprecationWarning(
             '5.2.0',
-            static::class . ' is deprecated. Use BadRequestException or a custom exception instead.'
+            static::class . ' is deprecated. Use BadRequestException or a custom exception instead.',
         );
 
         parent::__construct($message, $code, $previous);

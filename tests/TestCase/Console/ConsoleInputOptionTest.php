@@ -92,7 +92,7 @@ class ConsoleInputOptionTest extends TestCase
             true,
             false,
             null,
-            '; '
+            '; ',
         );
     }
 
@@ -131,7 +131,7 @@ class ConsoleInputOptionTest extends TestCase
             true,
             true,
             null,
-            ';'
+            ';',
         );
         $output = $input->help(72);
         $this->assertStringStartsWith('--color, -c ', $output);
@@ -188,7 +188,7 @@ class ConsoleInputOptionTest extends TestCase
             '',
             false,
             '',
-            []
+            [],
         );
         $this->assertTrue($input->validChoice('yellow'));
     }
@@ -204,7 +204,7 @@ class ConsoleInputOptionTest extends TestCase
             '',
             false,
             '',
-            ['red', 'blue']
+            ['red', 'blue'],
         );
         $this->expectException(ConsoleException::class);
         $this->expectExceptionMessage('`yellow` is not a valid value for `--color`. Please use one of `red|blue`');
@@ -222,7 +222,7 @@ class ConsoleInputOptionTest extends TestCase
             '',
             false,
             '',
-            ['red', 'blue']
+            ['red', 'blue'],
         );
         $this->assertTrue($input->validChoice('red'));
     }
@@ -238,7 +238,7 @@ class ConsoleInputOptionTest extends TestCase
             '',
             false,
             '',
-            ['1', '0']
+            ['1', '0'],
         );
         $this->expectException(ConsoleException::class);
         $input->validChoice(true);
@@ -279,7 +279,7 @@ class ConsoleInputOptionTest extends TestCase
             true,
             false,
             null,
-            $separator
+            $separator,
         );
 
         $success = $input->validChoice($value);
@@ -316,7 +316,7 @@ class ConsoleInputOptionTest extends TestCase
             true,
             false,
             null,
-            $separator
+            $separator,
         );
 
         $this->expectException(ConsoleException::class);
@@ -336,7 +336,7 @@ class ConsoleInputOptionTest extends TestCase
             'red',
             ['red', 'blue'],
             true,
-            true
+            true,
         );
         $parent = new SimpleXMLElement('<options></options>');
         $xml = $input->xml($parent);

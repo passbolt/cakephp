@@ -93,7 +93,7 @@ class TableFindByPropertyMethodReflection implements MethodReflection
                 true,
                 $this->getReturnType(),
                 $this->getReturnType(),
-                $this->getReturnType()
+                $this->getReturnType(),
             ),
         ];
     }
