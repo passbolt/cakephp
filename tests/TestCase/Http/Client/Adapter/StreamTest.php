@@ -174,18 +174,16 @@ class StreamTest extends TestCase
         $request = new Request(
             'http://localhost',
             'GET',
-            [
-                'Content-Type' => 'application/json',
-            ],
+            [],
             ['a' => 'my value'],
         );
 
         $this->stream->send($request, []);
         $result = $this->stream->contextOptions();
         $expected = [
-            'Content-Type: application/x-www-form-urlencoded',
             'Connection: close',
             'User-Agent: CakePHP',
+            'Content-Type: application/x-www-form-urlencoded',
         ];
         $this->assertStringStartsWith(implode("\r\n", $expected), $result['header']);
         $this->assertStringContainsString('a=my+value', $result['content']);
@@ -200,7 +198,7 @@ class StreamTest extends TestCase
         $request = new Request(
             'http://localhost',
             'GET',
-            ['Content-Type' => 'application/json'],
+            [],
             ['upload' => fopen(CORE_PATH . 'VERSION.txt', 'r')],
         );
 
