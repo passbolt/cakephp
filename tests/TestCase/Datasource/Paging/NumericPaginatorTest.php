@@ -66,6 +66,11 @@ class NumericPaginatorTest extends TestCase
         $this->assertCount(3, $result, '3 rows should come back');
         $this->assertEquals(['First Post', 'Second Post', 'Third Post'], $titleExtractor($result));
 
+        $settings = ['finder' => 'published'];
+        $result = $this->Paginator->paginate($table->find(), [], $settings);
+        $this->assertCount(3, $result, '3 rows should come back');
+        $this->assertEquals(['First Post', 'Second Post', 'Third Post'], $titleExtractor($result));
+
         $pagingParams = $result->pagingParams();
         $this->assertSame(3, $pagingParams['count']);
         $this->assertSame(3, $pagingParams['totalCount']);
