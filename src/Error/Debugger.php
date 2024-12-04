@@ -80,6 +80,7 @@ class Debugger
         'sublime' => 'subl://open?url=file://{file}&line={line}',
         'textmate' => 'txmt://open?url=file://{file}&line={line}',
         'vscode' => 'vscode://file/{file}:{line}',
+        'vscodium' => 'vscodium://file/{file}:{line}',
     ];
 
     /**
