@@ -399,6 +399,18 @@ class FormHelperTest extends TestCase
             '/div',
         ];
         $this->assertHtml($expected, $result);
+
+        $result = $this->Form->create(options: ['type' => 'file', 'templates' => ['hiddenClass' => 'hidden']]);
+        $expected = [
+            'form' => [
+                'method' => 'post', 'action' => '/articles/add',
+                'accept-charset' => $encoding, 'enctype' => 'multipart/form-data',
+            ],
+            'div' => ['class' => 'hidden'],
+            'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
+            '/div',
+        ];
+        $this->assertHtml($expected, $result);
     }
 
     /**
@@ -1079,6 +1091,12 @@ class FormHelperTest extends TestCase
             ]],
             '/div',
         ];
+        $this->assertHtml($expected, $result);
+
+        $this->Form->create(options: ['templates' => ['hiddenClass' => 'hideme']]);
+        $result = $this->Form->secure($fields);
+        $expected['div'] = ['class' => 'hideme'];
+
         $this->assertHtml($expected, $result);
     }
 
@@ -6925,11 +6943,12 @@ class FormHelperTest extends TestCase
         ];
         $this->assertHtml($expected, $result);
 
+        $this->Form->setTemplates(['hiddenClass' => 'hideme']);
         $result = $this->Form->postLink('Delete', '/posts/delete/1', ['method' => 'delete']);
         $expected = [
             'form' => [
                 'method' => 'post', 'action' => '/posts/delete/1',
-                'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+                'name' => 'preg:/post_\w+/', 'class' => 'hideme',
             ],
             'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'DELETE'],
             '/form',
@@ -6938,6 +6957,7 @@ class FormHelperTest extends TestCase
             '/a',
         ];
         $this->assertHtml($expected, $result);
+        $this->Form->setTemplates(['hiddenClass' => '']);
 
         $result = $this->Form->postLink(
             'Delete',
