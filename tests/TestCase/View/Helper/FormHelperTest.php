@@ -7050,6 +7050,77 @@ class FormHelperTest extends TestCase
         $this->assertHtml($expected, $result);
     }
 
+    public function testPostLinkWithCspScriptNonce()
+    {
+        $request = $this->Form->getView()->getRequest()->withAttribute('cspScriptNonce', 'i-am-nonce');
+        $this->Form->getView()->setRequest($request);
+
+        $result = $this->Form->postLink('Delete', '/posts/delete/1', ['confirm' => 'Confirm?']);
+        $expected = [
+            'form' => [
+                'method' => 'post', 'action' => '/posts/delete/1',
+                'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+            ],
+            'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
+            '/form',
+            'script' => [
+                'nonce' => 'i-am-nonce',
+            ],
+            'preg:/document\.getElementById\("link\-post\-\w+"\)\.addEventListener\("click", function\(event\) { if \(confirm\(this\.dataset\.confirmMessage\)\) \{ document\.post_\w+\.submit\(\); \} event\.returnValue = false; return false; }\);/',
+            '/script',
+            'a' => [
+                'href' => '#',
+                'data-confirm-message' => 'Confirm?',
+                'id' => 'preg:/link-post-\w+/',
+            ],
+            'Delete',
+            '/a',
+        ];
+        $this->assertHtml($expected, $result);
+
+        $result = $this->Form->postLink('Delete', '/posts/delete/1', ['confirm' => 'Confirm?', 'block' => true]);
+        $expected = [
+            // 'form' => [
+            //     'method' => 'post', 'action' => '/posts/delete/1',
+            //     'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+            // ],
+            // 'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
+            // '/form',
+            // 'script' => [
+            //     'nonce' => 'i-am-nonce',
+            // ],
+            // 'preg:/document\.getElementById\("link\-post\-\w+"\)\.addEventListener\("click", function\(event\) { if \(confirm\(this\.dataset\.confirmMessage\)\) \{ document\.post_\w+\.submit\(\); \} event\.returnValue = false; return false; }\);/',
+            // '/script',
+            'a' => [
+                'href' => '#',
+                'data-confirm-message' => 'Confirm?',
+                'id' => 'preg:/link-post-\w+/',
+            ],
+            'Delete',
+            '/a',
+        ];
+        $this->assertHtml($expected, $result);
+
+        $result = $this->Form->getView()->fetch('postLink');
+        $expected = [
+            'form' => [
+                'method' => 'post', 'action' => '/posts/delete/1',
+                'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+            ],
+            'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
+            '/form',
+            'script' => [
+                'nonce' => 'i-am-nonce',
+            ],
+            'preg:/document\.getElementById\("link\-post\-\w+"\)\.addEventListener\("click", function\(event\) { if \(confirm\(this\.dataset\.confirmMessage\)\) \{ document\.post_\w+\.submit\(\); \} event\.returnValue = false; return false; }\);/',
+            '/script',
+        ];
+        $this->assertHtml($expected, $result);
+
+        $request = $this->Form->getView()->getRequest()->withAttribute('cspScriptNonce', null);
+        $this->Form->getView()->setRequest($request);
+    }
+
     /**
      * testPostLinkWithQuery method
      *

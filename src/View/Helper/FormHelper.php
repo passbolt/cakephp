@@ -159,6 +159,9 @@ class FormHelper extends Helper
             'submitContainer' => '<div class="submit">{{content}}</div>',
             // Confirm javascript template for postLink()
             'confirmJs' => '{{confirm}}',
+            // Templates for postLink() JS for <script> tag. (used for CSP)
+            'postLinkJs'
+                => 'document.getElementById("{{linkId}}").addEventListener("click", function(event) { {{content}} });',
             // selected class
             'selectedClass' => 'selected',
             // required class
@@ -1945,7 +1948,6 @@ class FormHelper extends Helper
             $this->_View->append($options['block'], $out);
             $out = '';
         }
-        unset($options['block']);
 
         $url = '#';
         $onClick = 'document.' . $formName . '.submit();';
@@ -1961,7 +1963,20 @@ class FormHelper extends Helper
         } else {
             $onClick .= ' event.returnValue = false; return false;';
         }
-        $options['onclick'] = $onClick;
+
+        if ($this->_View->getRequest()->getAttribute('cspScriptNonce')) {
+            $options['id'] ??= $this->_domId('link-' . $formName);
+            $script = $this->templater()->format('postLinkJs', [
+                'linkId' => $options['id'],
+                'content' => $onClick,
+            ]);
+
+            $out .= $this->Html->scriptBlock($script, ['block' => $options['block']]);
+        } else {
+            $options['onclick'] = $onClick;
+        }
+
+        unset($options['block']);
 
         $out .= $this->Html->link($title, $url, $options);
 
