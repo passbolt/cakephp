@@ -272,7 +272,11 @@ class CacheTest extends TestCase
             'engine' => $engine,
         ]);
 
-        $engine = Cache::pool('tests');
+        $regex = '/^Cache engine `.*TestAppCacheEngine.*/';
+        $this->expectWarningMessageMatches($regex, function () use (&$engine): void {
+            $engine = Cache::pool('tests');
+        });
+
         $this->assertInstanceOf(NullEngine::class, $engine);
     }
 
