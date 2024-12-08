@@ -34,6 +34,7 @@ use Cake\View\View;
 use Cake\View\Widget\WidgetInterface;
 use Cake\View\Widget\WidgetLocator;
 use InvalidArgumentException;
+use function Cake\Core\deprecationWarning;
 use function Cake\Core\h;
 use function Cake\I18n\__;
 use function Cake\I18n\__d;
@@ -1359,7 +1360,15 @@ class FormHelper extends Helper
     {
         assert(is_subclass_of($enumClass, BackedEnum::class));
 
-        $hasLabel = is_a($enumClass, EnumLabelInterface::class, true) || method_exists($enumClass, 'label');
+        if (is_a($enumClass, EnumLabelInterface::class, true)) {
+            $hasLabel = true;
+        } elseif (method_exists($enumClass, 'label')) {
+            $hasLabel = true;
+            deprecationWarning('5.2.0', 'Enum\'s with the `label()` method must implement the `EnumLabelInterface`.');
+        } else {
+            $hasLabel = false;
+        }
+
         $values = [];
         foreach ($enumClass::cases() as $enumClass) {
             /**
