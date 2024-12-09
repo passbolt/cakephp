@@ -7080,17 +7080,6 @@ class FormHelperTest extends TestCase
 
         $result = $this->Form->postLink('Delete', '/posts/delete/1', ['confirm' => 'Confirm?', 'block' => true]);
         $expected = [
-            // 'form' => [
-            //     'method' => 'post', 'action' => '/posts/delete/1',
-            //     'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
-            // ],
-            // 'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
-            // '/form',
-            // 'script' => [
-            //     'nonce' => 'i-am-nonce',
-            // ],
-            // 'preg:/document\.getElementById\("link\-post\-\w+"\)\.addEventListener\("click", function\(event\) { if \(confirm\(this\.dataset\.confirmMessage\)\) \{ document\.post_\w+\.submit\(\); \} event\.returnValue = false; return false; }\);/',
-            // '/script',
             'a' => [
                 'href' => '#',
                 'data-confirm-message' => 'Confirm?',
