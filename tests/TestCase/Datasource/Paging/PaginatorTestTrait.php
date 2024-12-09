@@ -25,6 +25,7 @@ use Cake\Datasource\RepositoryInterface;
 use Cake\ORM\Query\SelectQuery;
 use Cake\ORM\ResultSet;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use TestApp\Model\Table\PaginatorPostsTable;
 
 trait PaginatorTestTrait
@@ -1154,6 +1155,7 @@ trait PaginatorTestTrait
     /**
      * test the `finder` is unused if paginate() is called with a query instance.
      */
+    #[WithoutErrorHandler]
     public function testPaginateQueryUnusedFinder(): void
     {
         $settings = [
@@ -1167,13 +1169,10 @@ trait PaginatorTestTrait
         $table->expects($this->never())
             ->method('find');
 
-        $query->expects($this->once())->method('applyOptions')
-            ->with([
-                'limit' => 2,
-                'page' => 1,
-                'order' => [],
-            ]);
-        $this->Paginator->paginate($query, [], $settings)->pagingParams();
+        $regex = '/Finder option \(.+?\) from pagination config is not applied when a `SelectQuery` instance is passed to `paginate\(\)`/';
+        $this->expectWarningMessageMatches($regex, function () use ($query, $settings) {
+            $this->Paginator->paginate($query, [], $settings);
+        });
     }
 
     /**
@@ -1192,14 +1191,11 @@ trait PaginatorTestTrait
         $table = $this->_getMockPosts(['find']);
         $query = $this->_getMockFindQuery($table);
         $table->expects($this->never())->method('find');
-        $query->expects($this->once())
-            ->method('applyOptions')
-            ->with([
-                'limit' => 10,
-                'order' => ['PaginatorPosts.id' => 'ASC'],
-                'page' => 1,
-            ]);
-        $this->Paginator->paginate($query, $params, $settings);
+
+        $regex = '/Finder option \(.+?\) from pagination config is not applied when a `SelectQuery` instance is passed to `paginate\(\)`/';
+        $this->expectWarningMessageMatches($regex, function () use ($query, $params, $settings) {
+            $this->Paginator->paginate($query, $params, $settings);
+        });
     }
 
     /**
@@ -1215,7 +1211,10 @@ trait PaginatorTestTrait
             ->bind(':start', 1)
             ->bind(':end', 2);
 
-        $results = $this->Paginator->paginate($query, []);
+        $regex = '/Finder option \(.+?\) from pagination config is not applied when a `SelectQuery` instance is passed to `paginate\(\)`/';
+        $this->expectWarningMessageMatches($regex, function () use ($query, &$results) {
+            $results = $this->Paginator->paginate($query, []);
+        });
 
         $result = $results->toArray();
         $this->assertCount(2, $result);
@@ -1241,14 +1240,11 @@ trait PaginatorTestTrait
         $query = $this->_getMockFindQuery($table);
         $query->limit(2);
         $table->expects($this->never())->method('find');
-        $query->expects($this->once())
-            ->method('applyOptions')
-            ->with([
-                'limit' => 5,
-                'order' => ['PaginatorPosts.id' => 'ASC'],
-                'page' => 1,
-            ]);
-        $this->Paginator->paginate($query, $params, $settings);
+
+        $regex = '/Finder option \(.+?\) from pagination config is not applied when a `SelectQuery` instance is passed to `paginate\(\)`/';
+        $this->expectWarningMessageMatches($regex, function () use ($query, $params, $settings) {
+            $this->Paginator->paginate($query, $params, $settings);
+        });
     }
 
     /**

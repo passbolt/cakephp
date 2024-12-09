@@ -21,6 +21,7 @@ use Cake\Http\Response;
 use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use stdClass;
 use function Cake\Core\deprecationWarning;
 use function Cake\Core\env;
@@ -388,6 +389,7 @@ class FunctionsTest extends TestCase
     /**
      * Test no error when warning level is off.
      */
+    #[WithoutErrorHandler]
     public function testTriggerWarningLevelDisabled(): void
     {
         $this->withErrorReporting(E_ALL ^ E_USER_WARNING, function (): void {
