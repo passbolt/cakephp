@@ -378,7 +378,9 @@ class SocketTest extends TestCase
         // testing on tls server
         $this->_connectSocketToSslTls();
         $this->Socket->enableCrypto('tls', 'client');
-        $this->Socket->enableCrypto('tls', 'client');
+        $this->expectWarningMessageMatches('/^Unable to perform enableCrypto operation on the current socket$/', function () {
+            $this->Socket->enableCrypto('tls', 'client');
+        });
     }
 
     /**
