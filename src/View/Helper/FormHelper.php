@@ -481,14 +481,7 @@ class FormHelper extends Helper
         }
 
         if ($append) {
-            $hiddenClass = $this->templater()->get('hiddenClass');
-            $hiddenBlockAttrs = $hiddenClass
-                ? ['class' => $hiddenClass]
-                : ['style' => 'display:none;'];
-            $append = $templater->format('hiddenBlock', [
-                'content' => $append,
-                'attrs' => $templater->formatAttributes($hiddenBlockAttrs),
-            ]);
+            $append = $this->wrapInHiddenBlock($append);
         }
 
         $actionAttr = $templater->formatAttributes(['action' => $action, 'escape' => false]);
@@ -653,13 +646,24 @@ class FormHelper extends Helper
             $out .= $this->hidden('_Token.debug', $tokenDebug);
         }
 
+        return $this->wrapInHiddenBlock($out);
+    }
+
+    /**
+     * Wrap the given content in a hidden div.
+     *
+     * @param string $content Content to wrap.
+     * @return string
+     */
+    protected function wrapInHiddenBlock(string $content): string
+    {
         $hiddenClass = $this->templater()->get('hiddenClass');
         $hiddenBlockAttrs = $hiddenClass
             ? ['class' => $hiddenClass]
             : ['style' => 'display:none;'];
 
         return $this->formatTemplate('hiddenBlock', [
-            'content' => $out,
+            'content' => $content,
             'attrs' => $this->templater()->formatAttributes($hiddenBlockAttrs),
         ]);
     }
