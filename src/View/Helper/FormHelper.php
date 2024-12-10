@@ -1968,21 +1968,21 @@ class FormHelper extends Helper
             $onClick .= ' event.returnValue = false; return false;';
         }
 
+        $script = null;
         if ($this->_View->getRequest()->getAttribute('cspScriptNonce')) {
             $options['id'] ??= $this->_domId('link-' . $formName);
             $script = $this->templater()->format('postLinkJs', [
                 'linkId' => $options['id'],
                 'content' => $onClick,
             ]);
-
-            $out .= $this->Html->scriptBlock($script, ['block' => $options['block']]);
+            $script = $this->Html->scriptBlock($script, ['block' => $options['block']]);
         } else {
             $options['onclick'] = $onClick;
         }
 
         unset($options['block']);
 
-        $out .= $this->Html->link($title, $url, $options);
+        $out .= $this->Html->link($title, $url, $options) . $script;
 
         return $out;
     }

@@ -7063,11 +7063,6 @@ class FormHelperTest extends TestCase
             ],
             'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
             '/form',
-            'script' => [
-                'nonce' => 'i-am-nonce',
-            ],
-            'preg:/document\.getElementById\("link\-post\-\w+"\)\.addEventListener\("click", function\(event\) { if \(confirm\(this\.dataset\.confirmMessage\)\) \{ document\.post_\w+\.submit\(\); \} event\.returnValue = false; return false; }\);/',
-            '/script',
             'a' => [
                 'href' => '#',
                 'data-confirm-message' => 'Confirm?',
@@ -7075,6 +7070,11 @@ class FormHelperTest extends TestCase
             ],
             'Delete',
             '/a',
+            'script' => [
+                'nonce' => 'i-am-nonce',
+            ],
+            'preg:/document\.getElementById\("link\-post\-\w+"\)\.addEventListener\("click", function\(event\) { if \(confirm\(this\.dataset\.confirmMessage\)\) \{ document\.post_\w+\.submit\(\); \} event\.returnValue = false; return false; }\);/',
+            '/script',
         ];
         $this->assertHtml($expected, $result);
 
