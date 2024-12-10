@@ -122,7 +122,7 @@ class FormHelper extends Helper
             // General grouping container for control(). Defines input/label ordering.
             'formGroup' => '{{label}}{{input}}',
             // Wrapper content used to hide other content.
-            'hiddenBlock' => '<div style="display:none;">{{content}}</div>',
+            'hiddenBlock' => '<div{{attrs}}>{{content}}</div>',
             // Generic input element.
             'input' => '<input type="{{type}}" name="{{name}}"{{attrs}}>',
             // Submit input element.
@@ -159,10 +159,15 @@ class FormHelper extends Helper
             'submitContainer' => '<div class="submit">{{content}}</div>',
             // Confirm javascript template for postLink()
             'confirmJs' => '{{confirm}}',
+            // Templates for postLink() JS for <script> tag. (used for CSP)
+            'postLinkJs'
+                => 'document.getElementById("{{linkId}}").addEventListener("click", function(event) { {{content}} });',
             // selected class
             'selectedClass' => 'selected',
             // required class
             'requiredClass' => 'required',
+            // Class to use instead of "display:none" style attribute for hidden elements
+            'hiddenClass' => '',
         ],
         // set HTML5 validation message to custom required/empty messages
         'autoSetCustomValidity' => true,
@@ -476,7 +481,7 @@ class FormHelper extends Helper
         }
 
         if ($append) {
-            $append = $templater->format('hiddenBlock', ['content' => $append]);
+            $append = $this->wrapInHiddenBlock($append);
         }
 
         $actionAttr = $templater->formatAttributes(['action' => $action, 'escape' => false]);
@@ -641,7 +646,26 @@ class FormHelper extends Helper
             $out .= $this->hidden('_Token.debug', $tokenDebug);
         }
 
-        return $this->formatTemplate('hiddenBlock', ['content' => $out]);
+        return $this->wrapInHiddenBlock($out);
+    }
+
+    /**
+     * Wrap the given content in a hidden div.
+     *
+     * @param string $content Content to wrap.
+     * @return string
+     */
+    protected function wrapInHiddenBlock(string $content): string
+    {
+        $hiddenClass = $this->templater()->get('hiddenClass');
+        $hiddenBlockAttrs = $hiddenClass
+            ? ['class' => $hiddenClass]
+            : ['style' => 'display:none;'];
+
+        return $this->formatTemplate('hiddenBlock', [
+            'content' => $content,
+            'attrs' => $this->templater()->formatAttributes($hiddenBlockAttrs),
+        ]);
     }
 
     /**
@@ -1870,9 +1894,14 @@ class FormHelper extends Helper
         $formName = str_replace('.', '', uniqid('post_', true));
         $formOptions = [
             'name' => $formName,
-            'style' => 'display:none;',
             'method' => 'post',
         ];
+        $hiddenClass = $this->templater()->get('hiddenClass');
+        if ($hiddenClass === '' || $hiddenClass === null) {
+            $formOptions['style'] = 'display:none;';
+        } else {
+            $formOptions['class'] = $hiddenClass;
+        }
         if (isset($options['target'])) {
             $formOptions['target'] = $options['target'];
             unset($options['target']);
@@ -1923,7 +1952,6 @@ class FormHelper extends Helper
             $this->_View->append($options['block'], $out);
             $out = '';
         }
-        unset($options['block']);
 
         $url = '#';
         $onClick = 'document.' . $formName . '.submit();';
@@ -1939,9 +1967,22 @@ class FormHelper extends Helper
         } else {
             $onClick .= ' event.returnValue = false; return false;';
         }
-        $options['onclick'] = $onClick;
 
-        $out .= $this->Html->link($title, $url, $options);
+        $script = null;
+        if ($this->_View->getRequest()->getAttribute('cspScriptNonce')) {
+            $options['id'] ??= $this->_domId('link-' . $formName);
+            $script = $this->templater()->format('postLinkJs', [
+                'linkId' => $options['id'],
+                'content' => $onClick,
+            ]);
+            $script = $this->Html->scriptBlock($script, ['block' => $options['block']]);
+        } else {
+            $options['onclick'] = $onClick;
+        }
+
+        unset($options['block']);
+
+        $out .= $this->Html->link($title, $url, $options) . $script;
 
         return $out;
     }

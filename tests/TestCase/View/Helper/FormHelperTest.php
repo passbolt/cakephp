@@ -399,6 +399,18 @@ class FormHelperTest extends TestCase
             '/div',
         ];
         $this->assertHtml($expected, $result);
+
+        $result = $this->Form->create(options: ['type' => 'file', 'templates' => ['hiddenClass' => 'hidden']]);
+        $expected = [
+            'form' => [
+                'method' => 'post', 'action' => '/articles/add',
+                'accept-charset' => $encoding, 'enctype' => 'multipart/form-data',
+            ],
+            'div' => ['class' => 'hidden'],
+            'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
+            '/div',
+        ];
+        $this->assertHtml($expected, $result);
     }
 
     /**
@@ -1079,6 +1091,12 @@ class FormHelperTest extends TestCase
             ]],
             '/div',
         ];
+        $this->assertHtml($expected, $result);
+
+        $this->Form->create(options: ['templates' => ['hiddenClass' => 'hideme']]);
+        $result = $this->Form->secure($fields);
+        $expected['div'] = ['class' => 'hideme'];
+
         $this->assertHtml($expected, $result);
     }
 
@@ -6925,11 +6943,12 @@ class FormHelperTest extends TestCase
         ];
         $this->assertHtml($expected, $result);
 
+        $this->Form->setTemplates(['hiddenClass' => 'hideme']);
         $result = $this->Form->postLink('Delete', '/posts/delete/1', ['method' => 'delete']);
         $expected = [
             'form' => [
                 'method' => 'post', 'action' => '/posts/delete/1',
-                'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+                'name' => 'preg:/post_\w+/', 'class' => 'hideme',
             ],
             'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'DELETE'],
             '/form',
@@ -6938,6 +6957,7 @@ class FormHelperTest extends TestCase
             '/a',
         ];
         $this->assertHtml($expected, $result);
+        $this->Form->setTemplates(['hiddenClass' => '']);
 
         $result = $this->Form->postLink(
             'Delete',
@@ -7028,6 +7048,66 @@ class FormHelperTest extends TestCase
         ];
 
         $this->assertHtml($expected, $result);
+    }
+
+    public function testPostLinkWithCspScriptNonce()
+    {
+        $request = $this->Form->getView()->getRequest()->withAttribute('cspScriptNonce', 'i-am-nonce');
+        $this->Form->getView()->setRequest($request);
+
+        $result = $this->Form->postLink('Delete', '/posts/delete/1', ['confirm' => 'Confirm?']);
+        $expected = [
+            'form' => [
+                'method' => 'post', 'action' => '/posts/delete/1',
+                'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+            ],
+            'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
+            '/form',
+            'a' => [
+                'href' => '#',
+                'data-confirm-message' => 'Confirm?',
+                'id' => 'preg:/link-post-\w+/',
+            ],
+            'Delete',
+            '/a',
+            'script' => [
+                'nonce' => 'i-am-nonce',
+            ],
+            'preg:/document\.getElementById\("link\-post\-\w+"\)\.addEventListener\("click", function\(event\) { if \(confirm\(this\.dataset\.confirmMessage\)\) \{ document\.post_\w+\.submit\(\); \} event\.returnValue = false; return false; }\);/',
+            '/script',
+        ];
+        $this->assertHtml($expected, $result);
+
+        $result = $this->Form->postLink('Delete', '/posts/delete/1', ['confirm' => 'Confirm?', 'block' => true]);
+        $expected = [
+            'a' => [
+                'href' => '#',
+                'data-confirm-message' => 'Confirm?',
+                'id' => 'preg:/link-post-\w+/',
+            ],
+            'Delete',
+            '/a',
+        ];
+        $this->assertHtml($expected, $result);
+
+        $result = $this->Form->getView()->fetch('postLink');
+        $expected = [
+            'form' => [
+                'method' => 'post', 'action' => '/posts/delete/1',
+                'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+            ],
+            'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'POST'],
+            '/form',
+            'script' => [
+                'nonce' => 'i-am-nonce',
+            ],
+            'preg:/document\.getElementById\("link\-post\-\w+"\)\.addEventListener\("click", function\(event\) { if \(confirm\(this\.dataset\.confirmMessage\)\) \{ document\.post_\w+\.submit\(\); \} event\.returnValue = false; return false; }\);/',
+            '/script',
+        ];
+        $this->assertHtml($expected, $result);
+
+        $request = $this->Form->getView()->getRequest()->withAttribute('cspScriptNonce', null);
+        $this->Form->getView()->setRequest($request);
     }
 
     /**
