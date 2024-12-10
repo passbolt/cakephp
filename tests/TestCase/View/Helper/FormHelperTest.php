@@ -45,6 +45,7 @@ use Cake\View\Widget\WidgetLocator;
 use InvalidArgumentException;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use ReflectionProperty;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Enum\ArticleStatus;
@@ -2402,6 +2403,27 @@ class FormHelperTest extends TestCase
         ];
         $this->assertHtml($expected, $result);
 
+        $result = $this->Form->control('Article.title', ['templates' => ['errorClass' => 'danger']]);
+        $expected = [
+            'div' => ['class' => 'input text error'],
+            'label' => ['for' => 'article-title'],
+            'Title',
+            '/label',
+            'input' => [
+                'type' => 'text',
+                'name' => 'Article[title]',
+                'id' => 'article-title',
+                'class' => 'danger',
+                'aria-invalid' => 'true',
+                'aria-describedby' => 'article-title-error',
+            ],
+            ['div' => ['class' => 'error-message', 'id' => 'article-title-error']],
+            'error message',
+            '/div',
+            '/div',
+        ];
+        $this->assertHtml($expected, $result);
+
         $result = $this->Form->control('Article.user_id', [
             'type' => 'select',
             'options' => ['1' => 'One', '2' => 'Two'],
@@ -2517,6 +2539,44 @@ class FormHelperTest extends TestCase
             '/div',
         ];
         $this->assertHtml($expected, $result);
+    }
+
+    /**
+     * @deprecated
+     */
+    #[WithoutErrorHandler]
+    public function testWarningForDeprecatedErrorClassConfig(): void
+    {
+        $this->Form->setConfig('errorClass', 'danger');
+        $this->article['errors'] = [
+            'Article' => [
+                'title' => 'error message',
+            ],
+        ];
+        $this->Form->create($this->article);
+
+        $this->deprecated(function (): void {
+            $result = $this->Form->control('Article.title');
+            $expected = [
+                'div' => ['class' => 'input text error'],
+                'label' => ['for' => 'article-title'],
+                'Title',
+                '/label',
+                'input' => [
+                    'type' => 'text',
+                    'name' => 'Article[title]',
+                    'id' => 'article-title',
+                    'class' => 'danger',
+                    'aria-invalid' => 'true',
+                    'aria-describedby' => 'article-title-error',
+                ],
+                ['div' => ['class' => 'error-message', 'id' => 'article-title-error']],
+                'error message',
+                '/div',
+                '/div',
+            ];
+            $this->assertHtml($expected, $result);
+        });
     }
 
     /**

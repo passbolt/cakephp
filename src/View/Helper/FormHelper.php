@@ -76,7 +76,8 @@ class FormHelper extends Helper
      */
     protected array $_defaultConfig = [
         'idPrefix' => null,
-        'errorClass' => 'form-error',
+        // Deprecated option, use templates.errorClass intead.
+        'errorClass' => null,
         'typeMap' => [
             'string' => 'text',
             'text' => 'textarea',
@@ -164,6 +165,8 @@ class FormHelper extends Helper
             'selectedClass' => 'selected',
             // required class
             'requiredClass' => 'required',
+            // CSS class added to the input when the field has validation errors
+            'errorClass' => 'form-error',
         ],
         // set HTML5 validation message to custom required/empty messages
         'autoSetCustomValidity' => true,
@@ -2400,7 +2403,17 @@ class FormHelper extends Helper
         }
 
         if ($context->hasError($field)) {
-            $options = $this->addClass($options, $this->_config['errorClass']);
+            $errorClass = $this->getConfig('errorClass');
+            if ($errorClass !== null) {
+                deprecationWarning(
+                    '5.2.0',
+                    'The `errorClass` config is deprecated. Use the `templates.errorClass` template variable instead.',
+                );
+            } else {
+                $errorClass = $this->templater()->get('errorClass');
+            }
+
+            $options = $this->addClass($options, $errorClass);
         }
         $isDisabled = $this->_isDisabled($options);
         if ($isDisabled) {
