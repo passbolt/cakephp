@@ -406,7 +406,7 @@ class FormHelper extends Helper
             'valueSources' => null,
         ];
 
-        if (isset($options['valueSources'])) {
+        if ($options['valueSources'] !== null) {
             $this->setValueSources($options['valueSources']);
             unset($options['valueSources']);
         }
