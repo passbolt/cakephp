@@ -189,7 +189,7 @@ class IntegrationTestTraitTest extends TestCase
             ],
         ]);
         $this->assertSame('test321', $this->_request['headers']['X-CSRF-Token']);
-        $this->assertEmpty($this->_request['webroot']);
+        $this->assertArrayNotHasKey('webroot', $this->_request);
     }
 
     /**
