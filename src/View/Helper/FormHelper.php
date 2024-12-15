@@ -1050,7 +1050,7 @@ class FormHelper extends Helper
      *   (field error and error messages).
      * - `empty` - String or boolean to enable empty select box options.
      * - `nestedInput` - Used with checkbox inputs. Set to false to render inputs outside of label
-     *   elements. By defult the checkbox input are rendered inside the label. If you disable this
+     *   elements. By default the checkbox input are rendered inside the label. If you disable this
      *   option you will also need to modify the default `checkboxWrapper` template to include the
      *   `{{input}}` template variable.
      * - `templates` - The templates you want to use for this input. Any templates will be merged on top of
