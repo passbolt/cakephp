@@ -1049,9 +1049,10 @@ class FormHelper extends Helper
      * - `error` - Control the error message that is produced. Set to `false` to disable any kind of error reporting
      *   (field error and error messages).
      * - `empty` - String or boolean to enable empty select box options.
-     * - `nestedInput` - Used with checkbox and radio inputs. Set to false to render inputs outside of label
-     *   elements. Can be set to true on any input to force the input inside the label. If you
-     *   enable this option for radio buttons you will also need to modify the default `radioWrapper` template.
+     * - `nestedInput` - Used with checkbox inputs. Set to false to render inputs outside of label
+     *   elements. By defult the checkbox input are rendered inside the label. If you disable this
+     *   option you will also need to modify the default `checkboxWrapper` template to include the
+     *   `{{input}}` template variable.
      * - `templates` - The templates you want to use for this input. Any templates will be merged on top of
      *   the already loaded templates. This option can either be a filename in /config that contains
      *   the templates you want to load, or an array of templates to use.
