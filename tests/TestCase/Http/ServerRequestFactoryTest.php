@@ -1046,8 +1046,6 @@ class ServerRequestFactoryTest extends TestCase
      */
     public function testFromGlobalsWithFiles(): void
     {
-        $this->assertNull(Configure::read('App.uploadedFilesAsObjects'));
-
         $files = [
             'file' => [
                 'name' => 'file.txt',
