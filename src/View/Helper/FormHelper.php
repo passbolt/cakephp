@@ -1391,7 +1391,7 @@ class FormHelper extends Helper
             $hasLabel = true;
         } elseif (method_exists($enumClass, 'label')) {
             $hasLabel = true;
-            deprecationWarning('5.2.0', 'Enum\'s with the `label()` method must implement the `EnumLabelInterface`.');
+            deprecationWarning('5.2.0', 'Enums with the `label()` method must implement the `EnumLabelInterface`.');
         } else {
             $hasLabel = false;
         }

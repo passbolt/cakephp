@@ -3780,10 +3780,10 @@ class FormHelperTest extends TestCase
 
         $articlesTable->getSchema()->setColumnType(
             'published',
-            EnumType::from(ArticleStatusLabel::class),
+            EnumType::from(ArticleStatusLabelInterface::class),
         );
+
         $this->Form->create($articlesTable->newEmptyEntity());
-        $result = $this->Form->control('published');
         $expected = [
             'div' => ['class' => 'input select'],
             'label' => ['for' => 'published'],
@@ -3799,14 +3799,6 @@ class FormHelperTest extends TestCase
             '/select',
             '/div',
         ];
-        $this->assertHtml($expected, $result);
-
-        $articlesTable->getSchema()->setColumnType(
-            'published',
-            EnumType::from(ArticleStatusLabelInterface::class),
-        );
-
-        $this->Form->create($articlesTable->newEmptyEntity());
         $result = $this->Form->control('published');
         $this->assertHtml($expected, $result);
 
@@ -3841,6 +3833,39 @@ class FormHelperTest extends TestCase
             '/div',
         ];
         $this->assertHtml($expected, $result);
+    }
+
+    /**
+     * @deprecated
+     */
+    #[WithoutErrorHandler]
+    public function testEnumOptionsDeprecationMessage(): void
+    {
+        $this->deprecated(function () {
+            $articlesTable = $this->getTableLocator()->get('Articles');
+            $articlesTable->getSchema()->setColumnType(
+                'published',
+                EnumType::from(ArticleStatusLabel::class),
+            );
+            $this->Form->create($articlesTable->newEmptyEntity());
+            $result = $this->Form->control('published');
+            $expected = [
+                'div' => ['class' => 'input select'],
+                'label' => ['for' => 'published'],
+                'Published',
+                '/label',
+                'select' => ['name' => 'published', 'id' => 'published'],
+                ['option' => ['value' => 'Y']],
+                'Is Published',
+                '/option',
+                ['option' => ['value' => 'N', 'selected' => 'selected']],
+                'Is Unpublished',
+                '/option',
+                '/select',
+                '/div',
+            ];
+            $this->assertHtml($expected, $result);
+        });
     }
 
     /**
