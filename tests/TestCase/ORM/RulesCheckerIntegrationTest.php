@@ -1346,16 +1346,22 @@ class RulesCheckerIntegrationTest extends TestCase
      */
     public function testIsLinkedToInferFieldFromAssociationNameWithNoRepositoryAvailable(): void
     {
-        $rulesChecker = new RulesChecker();
+        $Comments = new class extends Table {
+            public function initialize(array $config): void
+            {
+                $this->setAlias('Comments');
+                $this->setTable('comments');
+                $this->belongsTo('Articles');
+            }
 
-        /** @var \Cake\ORM\Table|\PHPUnit\Framework\MockObject\MockObject $Comments */
-        $Comments = $this->getMockForModel('Comments', ['rulesChecker'], ['className' => Table::class]);
-        $Comments
-            ->expects($this->any())
-            ->method('rulesChecker')
-            ->willReturn($rulesChecker);
-
-        $Comments->belongsTo('Articles');
+            public function buildRules(RulesChecker $rules): RulesChecker
+            {
+                return $rules->addUpdate(
+                    $rules->isLinkedTo('Articles'),
+                    ['repository' => $this],
+                );
+            }
+        };
 
         $comment = $Comments->save($Comments->newEntity([
             'article_id' => 9999,
@@ -1363,16 +1369,11 @@ class RulesCheckerIntegrationTest extends TestCase
             'comment' => 'Orphaned Comment',
         ]));
 
-        $rulesChecker->addUpdate(
-            $rulesChecker->isLinkedTo('Articles'),
-            ['repository' => $Comments],
-        );
-
         $comment->setDirty('comment', true);
         $this->assertFalse($Comments->save($comment));
 
         $expected = [
-            'articles' => [
+            'article' => [
                 '_isLinkedTo' => 'Cannot modify row: a constraint for the `Articles` association fails.',
             ],
         ];
@@ -1385,21 +1386,22 @@ class RulesCheckerIntegrationTest extends TestCase
      */
     public function testIsNotLinkedToInferFieldFromAssociationNameWithNoRepositoryAvailable(): void
     {
-        $rulesChecker = new RulesChecker();
+        $Articles = new class extends Table {
+            public function initialize(array $config): void
+            {
+                $this->setAlias('Articles');
+                $this->setTable('articles');
+                $this->hasMany('Comments');
+            }
 
-        /** @var \Cake\ORM\Table&\PHPUnit\Framework\MockObject\MockObject $Articles */
-        $Articles = $this->getMockForModel('Articles', ['rulesChecker'], ['className' => Table::class]);
-        $Articles
-            ->expects($this->any())
-            ->method('rulesChecker')
-            ->willReturn($rulesChecker);
-
-        $Articles->hasMany('Comments');
-
-        $rulesChecker->addDelete(
-            $rulesChecker->isNotLinkedTo('Comments'),
-            ['repository' => $Articles],
-        );
+            public function buildRules(RulesChecker $rules): RulesChecker
+            {
+                return $rules->addDelete(
+                    $rules->isNotLinkedTo('Comments'),
+                    ['repository' => $this],
+                );
+            }
+        };
 
         $article = $Articles->get(1);
         $this->assertFalse($Articles->delete($article));
