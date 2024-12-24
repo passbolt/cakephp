@@ -119,7 +119,7 @@ class AssetMiddleware implements MiddlewareInterface
      */
     protected function _getAssetFile(string $url): ?string
     {
-        $parts = explode('/', ltrim($url, '/'));
+        $parts = explode('/', ltrim($url, '/'), 3);
         $pluginPart = [];
         for ($i = 0; $i < 2; $i++) {
             if (!isset($parts[$i])) {
