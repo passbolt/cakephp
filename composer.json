@@ -141,5 +141,10 @@
         "issues": "https://github.com/cakephp/cakephp/issues",
         "forum": "https://discourse.cakephp.org/",
         "source": "https://github.com/cakephp/cakephp"
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-5.next": "5.2.x-dev"
+        }
     }
 }
