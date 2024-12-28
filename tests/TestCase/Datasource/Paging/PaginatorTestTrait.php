@@ -175,7 +175,7 @@ trait PaginatorTestTrait
             });
         });
         $results = $this->Paginator->paginate($articles);
-        $result = $results->first();
+        $result = $results->items()->first();
         $this->assertInstanceOf(EntityInterface::class, $result);
         $this->assertInstanceOf(EntityInterface::class, $result->_matchingData['Tags']);
         $this->assertInstanceOf(EntityInterface::class, $result->_matchingData['Authors']);

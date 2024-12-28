@@ -27,8 +27,10 @@ use Cake\ORM\Rule\LinkConstraint;
 use Cake\ORM\RulesChecker;
 use Cake\TestSuite\TestCase;
 use InvalidArgumentException;
+use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
 use stdClass;
+use TestApp\Model\Table\ArticlesTable;
 
 /**
  * Tests the LinkConstraint rule.
@@ -190,10 +192,18 @@ class LinkConstraintTest extends TestCase
         $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Argument 2 is expected to have a `repository` key that holds an instance of `\Cake\ORM\Table`');
 
-        $Articles = $this->getMockForModel('Articles', ['buildRules'], ['table' => 'articles']);
-
         $rulesChecker = new RulesChecker($options);
-        $Articles->expects($this->atLeastOnce())->method('buildRules')->willReturn($rulesChecker);
+
+        $Articles = Mockery::mock(
+            ArticlesTable::class . '[buildRules]',
+            [[
+                'alias' => 'Articles',
+                'table' => 'articles',
+            ]]
+        );
+        $Articles->shouldReceive('buildRules')
+            ->atLeast()->once()
+            ->andReturn($rulesChecker);
 
         $rulesChecker->addDelete(
             new LinkConstraint('Comments', LinkConstraint::STATUS_NOT_LINKED),
