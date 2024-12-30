@@ -52,6 +52,8 @@ use Mockery;
 use OutOfBoundsException;
 use PDOException;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
+use ReflectionMethod;
 use RuntimeException;
 use TestApp\Controller\Admin\ErrorController as PrefixErrorController;
 use TestApp\Error\Exception\MissingWidgetThing;
@@ -989,5 +991,19 @@ class WebExceptionRendererTest extends TestCase
 
         $result = (string)$exceptionRenderer->render()->getBody();
         $this->assertStringContainsString('<xml>rendered xml exception</xml>', $result);
+    }
+
+    #[WithoutErrorHandler]
+    public function testDeprecatedHttpErrorCodeMapping(): void
+    {
+        $this->deprecated(function () {
+            $exception = new MissingWidgetThing();
+            $exceptionRenderer = new MyCustomExceptionRenderer($exception);
+
+            $reflectedMethod = new ReflectionMethod($exceptionRenderer, 'getHttpCode');
+            $reflectedMethod->setAccessible(true);
+
+            $this->assertSame(404, $reflectedMethod->invoke($exceptionRenderer, $exception));
+        });
     }
 }
