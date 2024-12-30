@@ -759,6 +759,11 @@ SQL;
             ],
             [
                 'id',
+                ['type' => 'nativeuuid', 'length' => null, 'null' => false],
+                '"id" UUID NOT NULL',
+            ],
+            [
+                'id',
                 ['type' => 'binaryuuid', 'length' => null, 'null' => false],
                 '"id" UUID NOT NULL',
             ],
