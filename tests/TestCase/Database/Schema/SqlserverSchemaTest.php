@@ -641,6 +641,11 @@ SQL;
             ],
             [
                 'id',
+                ['type' => 'nativeuuid', 'null' => false],
+                '[id] UNIQUEIDENTIFIER NOT NULL',
+            ],
+            [
+                'id',
                 ['type' => 'binaryuuid', 'null' => false],
                 '[id] UNIQUEIDENTIFIER NOT NULL',
             ],
