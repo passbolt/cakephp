@@ -595,6 +595,43 @@ SQL;
         $this->assertEquals($expected['unique_position'], $result->getConstraint('unique_position'));
     }
 
+    public function testDescribeTableConstraintsColumnOrdering(): void
+    {
+        $this->_needsConnection();
+        $connection = ConnectionManager::get('test');
+
+        $queries = [
+            'CREATE TABLE ref_table (id SERIAL NOT NULL, field1 integer NOT NULL, field2 integer NOT NULL)',
+            'CREATE TABLE table_two (
+                id SERIAL NOT NULL, field1 INTEGER NOT NULL, field2 integer NOT NULL, ref_table_id INTEGER NOT NULL
+            )',
+            'CREATE UNIQUE INDEX ON ref_table (id, field1)',
+            'CREATE UNIQUE INDEX ON ref_table (field2, id)',
+            'ALTER TABLE table_two ADD CONSTRAINT test_constraint ' .
+                'FOREIGN KEY (ref_table_id, field1) REFERENCES ref_table(id, field1)',
+            'ALTER TABLE table_two ADD CONSTRAINT reverse_constraint ' .
+                'FOREIGN KEY (field2, ref_table_id) REFERENCES ref_table(field2, id)',
+        ];
+        foreach ($queries as $query) {
+            $connection->execute($query);
+        }
+        $schema = new SchemaCollection($connection);
+
+        $result = $schema->describe('table_two');
+
+        $connection->execute('DROP TABLE table_two');
+        $connection->execute('DROP TABLE ref_table');
+
+        $this->assertCount(2, $result->constraints());
+        $constraint = $result->getConstraint('test_constraint');
+        $this->assertSame(['ref_table_id', 'field1'], $constraint['columns']);
+        $this->assertSame(['ref_table', ['id', 'field1']], $constraint['references']);
+
+        $constraint = $result->getConstraint('reverse_constraint');
+        $this->assertSame(['field2', 'ref_table_id'], $constraint['columns']);
+        $this->assertSame(['ref_table', ['field2', 'id']], $constraint['references']);
+    }
+
     /**
      * Test describing a table with indexes
      */
