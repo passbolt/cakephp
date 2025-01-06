@@ -27,8 +27,11 @@ DASH_VERSION=$(shell echo $(VERSION) | sed -e s/\\./-/g)
 # For 3.0.x use 3.0.5
 APP_VERSION:=5.x
 
+# The branch name of the 'next' branch that will also have package
+# splits updated during a release.
+NEXT_BRANCH=5.next
+
 ALL: help
-.PHONY: help install test need-version bump-version tag-version
 
 help:
 	@echo "CakePHP Makefile"
@@ -42,10 +45,10 @@ help:
 	@echo "  Build the app package with all its dependencies."
 	@echo ""
 	@echo "publish"
-	@echo "  Publish the dist/cakephp-VERSION.zip to github."
+	@echo "  Publish the dist/cakephp-VERSION.zip to GitHub."
 	@echo ""
 	@echo "components"
-	@echo "  Split each of the public namespaces into separate repos and push the to Github."
+	@echo "  Split each of the public namespaces into separate repos and push the to GitHub."
 	@echo ""
 	@echo "clean-components CURRENT_BRANCH=xx"
 	@echo "  Delete branch xx from each subsplit. Useful when cleaning up after a security release."
@@ -54,10 +57,12 @@ help:
 	@echo "  Run the tests for CakePHP."
 	@echo ""
 	@echo "All other tasks are not intended to be run directly."
+.PHONY: help
 
 
 test: install
 	vendor/bin/phpunit
+.PHONY: test
 
 
 # Utility target for checking required parameters
@@ -75,6 +80,7 @@ composer.phar:
 # Install dependencies
 install: composer.phar
 	php composer.phar install
+.PHONY: install
 
 
 
@@ -88,6 +94,7 @@ bump-version: guard-VERSION
 	rm VERSION.old
 	git add VERSION.txt
 	git commit -m "Update version number to $(VERSION)"
+.PHONY: bump-version
 
 # Tag a release
 tag-release: guard-VERSION bump-version
@@ -100,11 +107,9 @@ tag-release: guard-VERSION bump-version
 
 # Tasks for tagging the app skeleton and
 # creating a zipball of a fully built app skeleton.
-.PHONY: clean package
-
 clean:
 	rm -rf build
-	rm -rf dist
+.PHONY: clean
 
 build:
 	mkdir -p build
@@ -135,12 +140,10 @@ dist/cakephp-$(DASH_VERSION).zip: build/app build/cakephp composer.phar
 
 # Easier to type alias for zip balls
 package: clean dist/cakephp-$(DASH_VERSION).zip
-
+.PHONY: package
 
 
 # Tasks to publish zipballs to Github.
-.PHONY: publish release
-
 publish: guard-VERSION dist/cakephp-$(DASH_VERSION).zip
 	@echo "Creating draft release for $(VERSION). prerelease=$(PRERELEASE)"
 	curl $(AUTH) -XPOST $(API_HOST)/repos/$(OWNER)/cakephp/releases -d '{"tag_name": "$(VERSION)", "name": "CakePHP $(VERSION) released", "draft": true, "prerelease": $(PRERELEASE)}' > release.json
@@ -155,11 +158,15 @@ publish: guard-VERSION dist/cakephp-$(DASH_VERSION).zip
 	# Cleanup files.
 	rm release.json
 	rm id.txt
+.PHONY: publish
 
 # Tasks for publishing separate repositories out of each CakePHP namespace
 
 components: $(foreach component, $(COMPONENTS), component-$(component))
+.PHONY: components
+
 components-tag: $(foreach component, $(COMPONENTS), tag-component-$(component))
+.PHONY: components-tag
 
 component-%:
 	git checkout $(CURRENT_BRANCH) > /dev/null
@@ -187,3 +194,4 @@ clean-component-%:
 
 # Top level alias for doing a release.
 release: guard-VERSION tag-release components-tag package publish
+.PHONY: release
