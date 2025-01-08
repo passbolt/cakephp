@@ -23,6 +23,7 @@ use Cake\Datasource\ConnectionManager;
 use Cake\I18n\I18n;
 use Cake\ORM\Behavior\Translate\ShadowTableStrategy;
 use Cake\ORM\Behavior\TranslateBehavior;
+use Cake\ORM\Entity;
 use Cake\Utility\Hash;
 use TestApp\Model\Entity\TranslateArticle;
 use TestApp\Model\Entity\TranslateBakedArticle;
@@ -939,6 +940,37 @@ class TranslateBehaviorShadowTableTest extends TranslateBehaviorEavTest
         $entity = $result->first();
         $this->assertSame('Title EN', $entity->title);
         $this->assertSame('Body EN', $entity->body);
+    }
+
+    /**
+     * Tests adding new translation to a record
+     */
+    public function testInsertNewTranslations(): void
+    {
+        parent::testInsertNewTranslations();
+
+        $shadowEntity = new class extends Entity {
+            protected function _setComment($value)
+            {
+                return $value . ' modified';
+            }
+        };
+
+        $table = $this->getTableLocator()->get('Comments');
+        $table->addBehavior('Translate', ['fields' => ['comment']]);
+        $table->setLocale('spa');
+        $table->getStrategy()->getTranslationTable()->setEntityClass($shadowEntity::class);
+
+        $entity = $table->get(1);
+        $entity->comment = 'New Comment';
+        $table->save($entity);
+
+        $entity = $table->get(1);
+        $this->assertSame(
+            'New Comment',
+            $entity->get('comment'),
+            'New translation should not be modified'
+        );
     }
 
     /**
