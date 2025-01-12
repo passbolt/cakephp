@@ -30,7 +30,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 /**
  * Test case for Sqlite Schema Dialect.
  */
-class SqliteSchemaTest extends TestCase
+class SqliteSchemaDialectTest extends TestCase
 {
     protected PDO $pdo;
 
