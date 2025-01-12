@@ -16,14 +16,9 @@ declare(strict_types=1);
  */
 namespace Cake\Test\TestCase\Database\Schema;
 
-use Cake\Database\Connection;
-use Cake\Database\Driver;
 use Cake\Database\Exception\DatabaseException;
-use Cake\Database\Schema\TableSchema;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\TestCase;
-use Exception;
-use PDO;
 
 /**
  * Test case for SchemaDialect methods
