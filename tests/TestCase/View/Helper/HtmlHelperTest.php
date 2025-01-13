@@ -2098,4 +2098,91 @@ class HtmlHelperTest extends TestCase
         ];
         $this->assertHtml($expected, $result);
     }
+
+    public function testImportmap(): void
+    {
+        $request = $this->View->getRequest()
+            ->withAttribute('base', '')
+            ->withAttribute('webroot', '/');
+        $this->View->setRequest($request);
+        Router::setRequest($request);
+
+        $imports = [
+            'foo' => 'foo',
+            'bar' => 'bar.js',
+            'baz' => './bar.js',
+            'relative' => '../relative.js',
+            'full' => '/full.js',
+            'path/' => '/some/path/',
+            'otherpath/' => 'other/path/',
+        ];
+        $result = $this->Html->importmap($imports);
+
+        $expected = $this->getImportmapScript([
+            'imports' => [
+                'foo' => '/js/foo.js',
+                'bar' => '/js/bar.js',
+                'baz' => '/js/./bar.js',
+                'relative' => '/js/../relative.js',
+                'full' => '/full.js',
+                'path/' => '/some/path/',
+                'otherpath/' => '/js/other/path/',
+            ],
+        ]);
+        $this->assertSame($expected, $result);
+
+        $map = [
+            'imports' => $imports,
+            'scopes' => [
+                'scoped/' => [
+                    'foo' => 'scope/foo',
+                ],
+            ],
+            'integrity' => [
+                'foo' => 'sha256-hash',
+            ],
+        ];
+        $result = $this->Html->importmap($map);
+
+        $expected = $this->getImportmapScript([
+            'imports' => [
+                'foo' => '/js/foo.js',
+                'bar' => '/js/bar.js',
+                'baz' => '/js/./bar.js',
+                'relative' => '/js/../relative.js',
+                'full' => '/full.js',
+                'path/' => '/some/path/',
+                'otherpath/' => '/js/other/path/',
+            ],
+            'scopes' => [
+                'scoped/' => [
+                    'foo' => '/js/scope/foo.js',
+                ],
+            ],
+            'integrity' => [
+                '/js/foo.js' => 'sha256-hash',
+            ],
+        ]);
+        $this->assertSame($expected, $result);
+
+        Configure::write('App.fullBaseUrl', 'http://localhost');
+        $imports = [
+            'foo' => 'foo',
+        ];
+        $result = $this->Html->importmap($imports, ['fullBase' => true]);
+
+        $expected = $this->getImportmapScript([
+            'imports' => [
+                'foo' => Router::fullBaseUrl() . '/js/foo.js',
+            ],
+        ]);
+        $this->assertSame($expected, $result);
+    }
+
+    protected function getImportmapScript(array $expected): string
+    {
+        return '<script type="importmap">'
+            . json_encode($expected, JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT)
+            . '</script>';
+    }
 }
