@@ -136,6 +136,11 @@ parameters:
 			path: src/ORM/Query/SelectQuery.php
 
 		-
+			message: "#^Anonymous variable in a `\\$this\\-\\>_behaviors\\-\\>\\.\\.\\.\\(\\)` method call can lead to false dead methods\\. Make sure the variable type is known$#"
+			count: 1
+			path: src/ORM/Table.php
+
+		-
 			message: "#^Unsafe usage of new static\\(\\)\\.$#"
 			count: 1
 			path: src/Routing/RouteBuilder.php
