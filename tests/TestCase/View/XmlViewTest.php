@@ -283,6 +283,7 @@ class XmlViewTest extends TestCase
             ['0'],
             [false],
             [''],
+            [[]],
         ];
     }
 
@@ -306,6 +307,7 @@ class XmlViewTest extends TestCase
 
         $expected = Xml::build(['response' => $data])->asXML();
         $this->assertSame($expected, $result);
+        $this->assertStringContainsString('<testing>0</testing>', $result);
     }
 
     /**
