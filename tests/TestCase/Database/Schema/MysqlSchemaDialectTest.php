@@ -32,7 +32,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 /**
  * Test case for MySQL Schema Dialect.
  */
-class MysqlSchemaTest extends TestCase
+class MysqlSchemaDialectTest extends TestCase
 {
     protected PDO $pdo;
 
