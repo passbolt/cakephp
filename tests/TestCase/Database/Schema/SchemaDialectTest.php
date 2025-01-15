@@ -80,4 +80,29 @@ class SchemaDialectTest extends TestCase
         $this->assertEquals('users', $result->name());
         $this->assertTrue($result->hasColumn('username'));
     }
+
+    public function testDescribeColumns(): void
+    {
+        $result = $this->dialect->describeColumns('users');
+        $this->assertCount(5, $result);
+        foreach ($result as $column) {
+            // Validate the interface for column array shape
+            $this->assertArrayHasKey('name', $column);
+            $this->assertTrue(is_string($column['name']));
+
+            $this->assertArrayHasKey('type', $column);
+            $this->assertTrue(is_string($column['type']));
+
+            $this->assertArrayHasKey('length', $column);
+            $this->assertTrue(is_int($column['length']) || $column['length'] === null);
+
+            $this->assertArrayHasKey('default', $column);
+
+            $this->assertArrayHasKey('null', $column);
+            $this->assertTrue(is_bool($column['null']));
+
+            $this->assertArrayHasKey('comment', $column);
+            $this->assertTrue(is_string($column['comment']));
+        }
+    }
 }
