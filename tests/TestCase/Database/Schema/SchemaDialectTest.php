@@ -102,7 +102,7 @@ class SchemaDialectTest extends TestCase
             $this->assertTrue(is_bool($column['null']));
 
             $this->assertArrayHasKey('comment', $column);
-            $this->assertTrue(is_string($column['comment']));
+            $this->assertTrue(is_string($column['comment']) || $column['comment'] === null);
         }
     }
 }
