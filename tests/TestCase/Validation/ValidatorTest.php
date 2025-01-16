@@ -356,7 +356,7 @@ class ValidatorTest extends TestCase
         $require = true;
         $validator->requirePresence('title', function ($context) use (&$require) {
             $this->assertEquals([], $context['data']);
-            $this->assertEquals([], $context['providers']);
+            $this->assertEquals(['default' => Validation::class], $context['providers']);
             $this->assertSame('title', $context['field']);
             $this->assertTrue($context['newRecord']);
 
@@ -1329,7 +1329,7 @@ class ValidatorTest extends TestCase
         $allow = true;
         $validator->allowEmptyString('title', null, function ($context) use (&$allow) {
             $this->assertEquals([], $context['data']);
-            $this->assertEquals([], $context['providers']);
+            $this->assertEquals(['default' => Validation::class], $context['providers']);
             $this->assertTrue($context['newRecord']);
 
             return $allow;
@@ -1350,7 +1350,7 @@ class ValidatorTest extends TestCase
         $prevent = true;
         $validator->notEmptyString('title', 'error message', function ($context) use (&$prevent) {
             $this->assertEquals([], $context['data']);
-            $this->assertEquals([], $context['providers']);
+            $this->assertEquals(['default' => Validation::class], $context['providers']);
             $this->assertFalse($context['newRecord']);
 
             return $prevent;
@@ -1833,7 +1833,7 @@ class ValidatorTest extends TestCase
 
         $result = $validator->__debugInfo();
         $expected = [
-            '_providers' => ['test'],
+            '_providers' => ['default', 'test'],
             '_fields' => [
                 'title' => [
                     'isPresenceRequired' => false,
@@ -2986,11 +2986,16 @@ class ValidatorTest extends TestCase
     public function testAddingDefaultProvider(): void
     {
         $validator = new Validator();
-        $this->assertEmpty($validator->providers(), 'Providers should be empty');
+        $this->assertSame(['default'], $validator->providers(), '`default` validator provider is missing');
+        $this->assertSame(Validation::class, $validator->getProvider('default'));
 
         Validator::addDefaultProvider('test-provider', 'MyNameSpace\Validation\MyProvider');
         $validator = new Validator();
-        $this->assertEquals($validator->providers(), ['test-provider'], 'Default provider `test-provider` is missing');
+        $this->assertEquals(
+            ['test-provider', 'default'],
+            $validator->providers(),
+            'Default provider `test-provider` is missing'
+        );
     }
 
     /**
