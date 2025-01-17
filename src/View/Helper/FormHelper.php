@@ -2012,6 +2012,7 @@ class FormHelper extends Helper
      * @return string A form based `<a>` element.
      * @see \Cake\View\Helper\FormHelper::postLink() for options and details.
      * @link https://book.cakephp.org/5/en/views/helpers/form.html#creating-standalone-buttons-and-post-links
+     * @since 5.2.0
      */
     public function deleteLink(string $title, array|string|null $url = null, array $options = []): string
     {
