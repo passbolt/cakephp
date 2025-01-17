@@ -7514,6 +7514,44 @@ class FormHelperTest extends TestCase
     }
 
     /**
+     * Tests deleteLink() method
+     */
+    public function testDeleteLink(): void
+    {
+        $result = $this->Form->deleteLink('Delete', '/posts/delete/1');
+        $expected = [
+            'form' => [
+                'method' => 'post', 'action' => '/posts/delete/1',
+                'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+            ],
+            'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'DELETE'],
+            '/form',
+            'a' => ['href' => '#', 'onclick' => 'preg:/document\.post_\w+\.submit\(\); event\.returnValue = false; return false;/'],
+            'Delete',
+            '/a',
+        ];
+        $this->assertHtml($expected, $result);
+
+        $result = $this->Form->deleteLink(
+            'Delete',
+            '/posts/delete/1',
+            ['target' => '_blank', 'class' => 'btn btn-danger'],
+        );
+        $expected = [
+            'form' => [
+                'method' => 'post', 'target' => '_blank', 'action' => '/posts/delete/1',
+                'name' => 'preg:/post_\w+/', 'style' => 'display:none;',
+            ],
+            'input' => ['type' => 'hidden', 'name' => '_method', 'value' => 'DELETE'],
+            '/form',
+            'a' => ['class' => 'btn btn-danger', 'href' => '#', 'onclick' => 'preg:/document\.post_\w+\.submit\(\); event\.returnValue = false; return false;/'],
+            'Delete',
+            '/a',
+        ];
+        $this->assertHtml($expected, $result);
+    }
+
+    /**
      * testSubmitButton method
      */
     public function testSubmitButton(): void
