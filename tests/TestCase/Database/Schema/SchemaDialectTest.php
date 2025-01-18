@@ -30,7 +30,9 @@ class SchemaDialectTest extends TestCase
      * @var array<string>
      */
     protected array $fixtures = [
+        'core.Products',
         'core.Users',
+        'core.Orders',
     ];
 
     /**
@@ -103,6 +105,25 @@ class SchemaDialectTest extends TestCase
 
             $this->assertArrayHasKey('comment', $column);
             $this->assertTrue(is_string($column['comment']) || $column['comment'] === null);
+        }
+    }
+
+    public function testDescribeIndexes(): void
+    {
+        $result = $this->dialect->describeIndexes('orders');
+        $this->assertCount(1, $result);
+        foreach ($result as $index) {
+            // Validate the interface for column array shape
+            $this->assertArrayHasKey('name', $index);
+            $this->assertTrue(is_string($index['name']));
+
+            $this->assertArrayHasKey('type', $index);
+            $this->assertTrue(is_string($index['type']));
+
+            $this->assertArrayHasKey('length', $index);
+
+            $this->assertArrayHasKey('columns', $index);
+            $this->assertTrue(is_array($index['columns']));
         }
     }
 }
