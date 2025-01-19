@@ -126,4 +126,29 @@ class SchemaDialectTest extends TestCase
             $this->assertTrue(is_array($index['columns']));
         }
     }
+
+    public function testDescribeForeignKeys(): void
+    {
+        $result = $this->dialect->describeForeignKeys('orders');
+        $this->assertCount(1, $result);
+        foreach ($result as $key) {
+            // Validate the interface for column array shape
+            $this->assertArrayHasKey('name', $key);
+            $this->assertTrue(is_string($key['name']));
+
+            $this->assertArrayHasKey('type', $key);
+            $this->assertTrue(is_string($key['type']));
+
+            $this->assertArrayHasKey('columns', $key);
+            $this->assertTrue(is_array($key['columns']));
+
+            $this->assertArrayHasKey('references', $key);
+            $this->assertTrue(is_array($key['references']));
+
+            $this->assertArrayHasKey('update', $key);
+            $this->assertTrue(is_string($key['update']) || $key['update'] === null);
+            $this->assertArrayHasKey('delete', $key);
+            $this->assertTrue(is_string($key['delete']) || $key['delete'] === null);
+        }
+    }
 }
