@@ -2002,8 +2002,8 @@ class FormHelper extends Helper
     }
 
     /**
-     * Creates an HTML link, but access the URL using the method you specify
-     *  (defaults to DELETE). Requires javascript to be enabled in browser.
+     * Creates an HTML link, that submits a form to the given URL using the DELETE method.
+     *  Requires javascript to be enabled in browser.
      *
      * @param string $title The content to be wrapped by <a> tags.
      * @param array|string|null $url Cake-relative URL or array of URL parameters, or
