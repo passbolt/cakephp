@@ -1038,6 +1038,9 @@ class ConnectionTest extends TestCase
         $schema = $connection->getSchemaCollection();
         $this->assertInstanceOf(CachedCollection::class, $schema);
         $this->assertSame('foo_key', $schema->cacheKey('key'));
+
+        // Ensure that the connection was not initialized
+        $this->assertFalse($connection->getDriver()->__debugInfo()['connected']);
     }
 
     /**

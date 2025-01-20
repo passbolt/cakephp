@@ -395,3 +395,9 @@ parameters:
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/View/Widget/DateTimeWidget.php
+
+		-
+			message: '#^PHPDoc tag @var with type array\<mixed\>\|bool\|int\|string\|null is not subtype of native type mixed\.$#'
+			identifier: varTag.nativeType
+			count: 1
+			path: src/View/XmlView.php
