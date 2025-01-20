@@ -530,6 +530,67 @@ class HtmlHelper extends Helper
     }
 
     /**
+     * Generate the "importmap" script tag.
+     *
+     * @param array $map Map array.
+     * @param array $options Same options as `UrlHelper::script()`.
+     * @return string
+     * @since 5.2.0
+     * @psalm-param array{imports?: array<string, string>, scopes?: array<string, array<string, array<string, string>>>, integrity?: array<string, string>} $map
+     */
+    public function importmap(array $map, array $options = []): string
+    {
+        $options += ['pathPrefix' => Configure::read('App.jsBaseUrl')];
+
+        if (!isset($map['imports'])) {
+            $map = ['imports' => $map];
+        }
+
+        $map['imports'] = $this->getImportPaths($map['imports'], $options);
+
+        if (isset($map['scopes'])) {
+            foreach ($map['scopes'] as $path => $submap) {
+                $map['scopes'][$path] = $this->getImportPaths($submap, $options);
+            }
+        }
+
+        if (isset($map['integrity'])) {
+            $integrity = [];
+            foreach ($map['integrity'] as $path => $hash) {
+                $integrity[$this->Url->script($path, $options)] = $hash;
+            }
+            $map['integrity'] = $integrity;
+        }
+
+        $jsonOpts = JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES;
+        if (Configure::read('debug')) {
+            $jsonOpts |= JSON_PRETTY_PRINT;
+        }
+
+        return (string)$this->scriptBlock(json_encode($map, $jsonOpts), ['type' => 'importmap']);
+    }
+
+    /**
+     * Get import paths for the importmap.
+     *
+     * @param array $map Import map.
+     * @param array $options Options.
+     * @return array
+     */
+    protected function getImportPaths(array $map, array $options): array
+    {
+        foreach ($map as $key => $path) {
+            if (str_ends_with($key, '/')) {
+                $map[$key] = $this->Url->assetUrl($path, $options);
+            } else {
+                $map[$key] = $this->Url->script($path, $options);
+            }
+        }
+
+        return $map;
+    }
+
+    /**
      * Wrap $script in a script tag.
      *
      * ### Options
