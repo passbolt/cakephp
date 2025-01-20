@@ -16,6 +16,7 @@ declare(strict_types=1);
  */
 namespace Cake\Test\TestCase\Database\Schema;
 
+use Cake\Database\Driver\Mysql;
 use Cake\Database\Exception\DatabaseException;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\TestCase;
@@ -150,5 +151,20 @@ class SchemaDialectTest extends TestCase
             $this->assertArrayHasKey('delete', $key);
             $this->assertTrue(is_string($key['delete']) || $key['delete'] === null);
         }
+    }
+
+    public function testDescribeOptions(): void
+    {
+        $result = $this->dialect->describeOptions('orders');
+        $this->assertTrue(is_array($result));
+    }
+
+    public function testDescribeOptionsMysql(): void
+    {
+        $this->skipIf(!(ConnectionManager::get('test')->getDriver() instanceof Mysql), 'requires mysql');
+        $result = $this->dialect->describeOptions('orders');
+        $this->assertTrue(is_array($result));
+        $this->assertArrayHasKey('engine', $result);
+        $this->assertArrayHasKey('collation', $result);
     }
 }
