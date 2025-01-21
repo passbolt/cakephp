@@ -1790,7 +1790,7 @@ class FormHelper extends Helper
      *
      * @param string $title The button's caption. Not automatically HTML encoded
      * @param array<string, mixed> $options Array of options and HTML attributes.
-     * @return string A HTML button tag.
+     * @return string An HTML button tag.
      * @link https://book.cakephp.org/5/en/views/helpers/form.html#creating-button-elements
      */
     public function button(string $title, array $options = []): string
@@ -1836,7 +1836,7 @@ class FormHelper extends Helper
      * @param string $title The button's caption. Not automatically HTML encoded
      * @param array|string $url URL as string or array
      * @param array<string, mixed> $options Array of options and HTML attributes.
-     * @return string A HTML button tag.
+     * @return string An HTML button tag.
      * @link https://book.cakephp.org/5/en/views/helpers/form.html#creating-standalone-buttons-and-post-links
      */
     public function postButton(string $title, array|string $url, array $options = []): string
@@ -1889,7 +1889,7 @@ class FormHelper extends Helper
      * @param array|string|null $url Cake-relative URL or array of URL parameters, or
      *   external URL (starts with http://)
      * @param array<string, mixed> $options Array of HTML attributes.
-     * @return string An `<a>` element.
+     * @return string A form based `<a>` element.
      * @link https://book.cakephp.org/5/en/views/helpers/form.html#creating-standalone-buttons-and-post-links
      */
     public function postLink(string $title, array|string|null $url = null, array $options = []): string
@@ -2002,6 +2002,26 @@ class FormHelper extends Helper
     }
 
     /**
+     * Creates an HTML link, that submits a form to the given URL using the DELETE method.
+     *  Requires javascript to be enabled in browser.
+     *
+     * @param string $title The content to be wrapped by <a> tags.
+     * @param array|string|null $url Cake-relative URL or array of URL parameters, or
+     *    external URL (starts with http://)
+     * @param array<string, mixed> $options Array of HTML attributes.
+     * @return string A form based `<a>` element.
+     * @see \Cake\View\Helper\FormHelper::postLink() for options and details.
+     * @link https://book.cakephp.org/5/en/views/helpers/form.html#creating-standalone-buttons-and-post-links
+     * @since 5.2.0
+     */
+    public function deleteLink(string $title, array|string|null $url = null, array $options = []): string
+    {
+        $options['method'] = 'delete';
+
+        return $this->postLink($title, $url, $options);
+    }
+
+    /**
      * Creates a submit button element. This method will generate `<input>` elements that
      * can be used to submit, and reset forms by using $options. image submits can be created by supplying an
      * image path for $caption.
@@ -2017,7 +2037,7 @@ class FormHelper extends Helper
      *  exists, AND the first character is /, image is relative to webroot,
      *  OR if the first character is not /, image is relative to webroot/img.
      * @param array<string, mixed> $options Array of options. See above.
-     * @return string A HTML submit button
+     * @return string An HTML submit button
      * @link https://book.cakephp.org/5/en/views/helpers/form.html#creating-buttons-and-submit-elements
      */
     public function submit(?string $caption = null, array $options = []): string
