@@ -23,6 +23,7 @@ use Cake\Database\Expression\QueryExpression;
 use Cake\Database\Expression\WindowExpression;
 use Cake\Database\ValueBinder;
 use Cake\TestSuite\TestCase;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 
 /**
  * Tests WindowExpression class
@@ -109,13 +110,16 @@ class WindowExpressionTest extends TestCase
         );
     }
 
+    #[WithoutErrorHandler]
     public function testOrderDeprecated(): void
     {
-        $w = (new WindowExpression())->order('test');
-        $this->assertEqualsSql(
-            'ORDER BY test',
-            $w->sql(new ValueBinder()),
-        );
+        $this->deprecated(function () {
+            $w = (new WindowExpression())->order('test');
+            $this->assertEqualsSql(
+                'ORDER BY test',
+                $w->sql(new ValueBinder()),
+            );
+        });
     }
 
     /**
