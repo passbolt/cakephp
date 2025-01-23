@@ -185,4 +185,17 @@ class SchemaDialectTest extends TestCase
         $this->assertFalse($this->dialect->hasTable('user'));
         $this->assertTrue($this->dialect->hasTable('users'));
     }
+
+    public function testHasIndex(): void
+    {
+        $this->assertFalse($this->dialect->hasIndex('orders', ['product_category']));
+        // Columns are reversed
+        $this->assertFalse($this->dialect->hasIndex('orders', ['product_id', 'product_category']));
+
+        // Name is wrong
+        $this->assertFalse($this->dialect->hasIndex('orders', ['product_category', 'product_id'], 'product_category_index'));
+
+        $this->assertTrue($this->dialect->hasIndex('orders', ['product_category', 'product_id']));
+        $this->assertTrue($this->dialect->hasIndex('orders', ['product_category', 'product_id'], 'product_category'));
+    }
 }
