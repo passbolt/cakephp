@@ -189,6 +189,7 @@ class SchemaDialectTest extends TestCase
     public function testHasIndex(): void
     {
         $this->assertFalse($this->dialect->hasIndex('orders', ['product_category']));
+
         // Columns are reversed
         $this->assertFalse($this->dialect->hasIndex('orders', ['product_id', 'product_category']));
 
@@ -197,5 +198,19 @@ class SchemaDialectTest extends TestCase
 
         $this->assertTrue($this->dialect->hasIndex('orders', ['product_category', 'product_id']));
         $this->assertTrue($this->dialect->hasIndex('orders', ['product_category', 'product_id'], 'product_category'));
+    }
+
+    public function testHasForeignKey(): void
+    {
+        $this->assertFalse($this->dialect->hasForeignKey('orders', ['product_category']));
+        // Columns are reversed
+        $this->assertFalse($this->dialect->hasForeignKey('orders', ['product_id', 'product_category']));
+
+        // Name is wrong
+        $this->assertFalse($this->dialect->hasForeignKey('orders', ['product_category', 'product_id'], 'product_category_index'));
+
+        $this->assertTrue($this->dialect->hasForeignKey('orders', ['product_category', 'product_id']));
+        $this->assertTrue($this->dialect->hasForeignKey('orders', ['product_category', 'product_id'], 'product_category_fk'));
+        $this->assertTrue($this->dialect->hasForeignKey('orders', [], 'product_category_fk'));
     }
 }
