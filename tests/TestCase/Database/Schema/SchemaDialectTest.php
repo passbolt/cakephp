@@ -167,4 +167,14 @@ class SchemaDialectTest extends TestCase
         $this->assertArrayHasKey('engine', $result);
         $this->assertArrayHasKey('collation', $result);
     }
+
+    public function testHasColumn(): void
+    {
+        $this->assertFalse($this->dialect->hasColumn('orders', 'nope'));
+        $this->assertFalse($this->dialect->hasColumn('orders', ''));
+        $this->assertFalse($this->dialect->hasColumn('invalid', 'also invalid'));
+
+        $this->assertTrue($this->dialect->hasColumn('users', 'username'));
+        $this->assertFalse($this->dialect->hasColumn('users', 'USERNAME'));
+    }
 }
