@@ -177,4 +177,12 @@ class SchemaDialectTest extends TestCase
         $this->assertTrue($this->dialect->hasColumn('users', 'username'));
         $this->assertFalse($this->dialect->hasColumn('users', 'USERNAME'));
     }
+
+    public function testHasTable(): void
+    {
+        $this->assertFalse($this->dialect->hasTable('nope'));
+        $this->assertFalse($this->dialect->hasTable('USERS'));
+        $this->assertFalse($this->dialect->hasTable('user'));
+        $this->assertTrue($this->dialect->hasTable('users'));
+    }
 }
