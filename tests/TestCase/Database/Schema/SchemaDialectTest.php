@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Cake\Test\TestCase\Database\Schema;
 
 use Cake\Database\Driver\Mysql;
+use Cake\Database\Driver\Sqlite;
 use Cake\Database\Exception\DatabaseException;
 use Cake\Datasource\ConnectionManager;
 use Cake\TestSuite\TestCase;
@@ -202,14 +203,20 @@ class SchemaDialectTest extends TestCase
 
     public function testHasForeignKey(): void
     {
+        // Columns are missing and reversed
         $this->assertFalse($this->dialect->hasForeignKey('orders', ['product_category']));
-        // Columns are reversed
         $this->assertFalse($this->dialect->hasForeignKey('orders', ['product_id', 'product_category']));
 
+        $this->assertTrue($this->dialect->hasForeignKey('orders', ['product_category', 'product_id']));
+    }
+
+    public function testHasForeignKeyNamed(): void
+    {
+        $driver = ConnectionManager::get('test')->getDriver();
+        $this->skipIf($driver instanceof Sqlite, 'sqlite does not preserve foreign key names');
         // Name is wrong
         $this->assertFalse($this->dialect->hasForeignKey('orders', ['product_category', 'product_id'], 'product_category_index'));
 
-        $this->assertTrue($this->dialect->hasForeignKey('orders', ['product_category', 'product_id']));
         $this->assertTrue($this->dialect->hasForeignKey('orders', ['product_category', 'product_id'], 'product_category_fk'));
         $this->assertTrue($this->dialect->hasForeignKey('orders', [], 'product_category_fk'));
     }
