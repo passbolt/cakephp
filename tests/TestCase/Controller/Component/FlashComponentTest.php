@@ -313,6 +313,18 @@ class FlashComponentTest extends TestCase
         ];
         $result = $this->Session->read('Flash.flash');
         $this->assertEquals($expected, $result);
+
+        $this->Flash->success('It worked', options: ['plugin' => 'MyPlugin']);
+
+        $expected[] = [
+            'message' => 'It worked',
+            'key' => 'flash',
+            'element' => 'MyPlugin.flash/success',
+            'params' => [],
+        ];
+
+        $result = $this->Session->read('Flash.flash');
+        $this->assertEquals($expected, $result);
     }
 
     /**
