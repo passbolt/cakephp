@@ -628,6 +628,38 @@ class MarshallerTest extends TestCase
             'joinData should contain a user entity.',
         );
         $this->assertSame('Mark', $result->tags[1]->_joinData->user->username);
+
+        $data = [
+            'title' => 'My title',
+            'body' => 'My content',
+            'author_id' => 1,
+            'tags' => [
+                [
+                    'tag' => 'news',
+                    'junction' => [
+                        'active' => 1,
+                        'user' => ['username' => 'Bill'],
+                    ],
+                ],
+                [
+                    'tag' => 'cakephp',
+                    'junction' => [
+                        'active' => 0,
+                        'user' => ['username' => 'Mark'],
+                    ],
+                ],
+            ],
+        ];
+
+        $this->articles->Tags->setJunctionProperty('junction');
+
+        $marshall = new Marshaller($this->articles);
+        $result = $marshall->one($data, ['associated' => ['Tags.junction.Users']]);
+        $this->assertInstanceOf(
+            Entity::class,
+            $result->tags[0]->junction->user,
+            'junction should contain a user entity.',
+        );
     }
 
     /**
@@ -2218,7 +2250,7 @@ class MarshallerTest extends TestCase
      */
     public function testMergeBelongsToManyJoinData(): void
     {
-        $data = [
+        $initData = [
             'title' => 'My title',
             'body' => 'My content',
             'author_id' => 1,
@@ -2242,7 +2274,7 @@ class MarshallerTest extends TestCase
 
         $options = ['associated' => ['Tags._joinData']];
         $marshall = new Marshaller($this->articles);
-        $entity = $marshall->one($data, $options);
+        $entity = $marshall->one($initData, $options);
         $entity->setAccess('*', true);
 
         $data = [
@@ -2253,6 +2285,7 @@ class MarshallerTest extends TestCase
             ],
         ];
         $tag1 = $entity->tags[0];
+
         $result = $marshall->merge($entity, $data, $options);
 
         $this->assertSame($data['title'], $result->title);
@@ -2271,6 +2304,45 @@ class MarshallerTest extends TestCase
         $this->assertSame('new tag', $entity->tags[1]->tag);
         $this->assertTrue($entity->tags[0]->isDirty('_joinData'));
         $this->assertTrue($entity->tags[1]->isDirty('_joinData'));
+
+        // With custom junction property
+        $this->articles->Tags->setJunctionProperty('_junction');
+        $initData['tags'][0]['_junction'] = $initData['tags'][0]['_joinData'];
+        $initData['tags'][1]['_junction'] = $initData['tags'][1]['_joinData'];
+        unset($initData['tags'][0]['_joinData'], $initData['tags'][1]['_joinData']);
+
+        $options = ['associated' => ['Tags._junction']];
+        $marshall = new Marshaller($this->articles);
+        $entity = $marshall->one($initData, $options);
+        $entity->setAccess('*', true);
+
+        $data = [
+            'title' => 'Haz data 2',
+            'tags' => [
+                ['id' => 1, 'tag' => 'Cake 2', '_junction' => ['foo' => 'bar 2']],
+                ['tag' => 'new tag 2', '_junction' => ['active' => 1, 'foo' => 'baz 2']],
+            ],
+        ];
+        $tag1 = $entity->tags[0];
+
+        $result = $marshall->merge($entity, $data, $options);
+
+        $this->assertSame($data['title'], $result->title);
+        $this->assertSame('My content', $result->body);
+        $this->assertTrue($result->isDirty('tags'));
+        $this->assertSame($tag1, $entity->tags[0]);
+        $this->assertSame($tag1->_junction, $entity->tags[0]->_junction);
+        $this->assertSame(
+            ['active' => 0, 'foo' => 'bar 2'],
+            $entity->tags[0]->_junction->toArray(),
+        );
+        $this->assertSame(
+            ['active' => 1, 'foo' => 'baz 2'],
+            $entity->tags[1]->_junction->toArray(),
+        );
+        $this->assertSame('new tag 2', $entity->tags[1]->tag);
+        $this->assertTrue($entity->tags[0]->isDirty('_junction'));
+        $this->assertTrue($entity->tags[1]->isDirty('_junction'));
     }
 
     /**
