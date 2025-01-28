@@ -2886,9 +2886,14 @@ class FormHelperTest extends TestCase
             'className' => ContactsTable::class,
         ]);
         $this->Form->create([], ['context' => ['table' => 'Contacts']]);
-        $result = $this->Form->control('Contact.email', ['id' => 'custom']);
+        $result = $this->Form->control('Contact.email', [
+            'id' => 'custom',
+            'templates' => [
+                'containerClass' => 'ic',
+            ],
+        ]);
         $expected = [
-            'div' => ['class' => 'input email'],
+            'div' => ['class' => 'ic email'],
             'label' => ['for' => 'custom'],
             'Email',
             '/label',
@@ -3109,13 +3114,16 @@ class FormHelperTest extends TestCase
 
         $entity->setError('field', ['maxLength'], true);
         $result = $this->Form->control('field', [
+            'templates' => [
+                'containerClass' => 'input-container',
+            ],
             'error' => [
                 'minLength' => 'Le login doit contenir au moins 2 caractères',
                 'maxLength' => 'login too large',
             ],
         ]);
         $expected = [
-            'div' => ['class' => 'input text error'],
+            'div' => ['class' => 'input-container text error'],
             'label' => ['for' => 'field'],
             'Field',
             '/label',
