@@ -253,7 +253,7 @@ class EntityContext implements ContextInterface
                 }
             }
 
-            $val = $entity->get($part);
+            $val = $entity->has($part) ? $entity->get($part) : null;
             if ($val !== null) {
                 return $val;
             }
