@@ -201,7 +201,6 @@ class SchemaDialectTest extends TestCase
         $this->assertTrue($this->dialect->hasIndex('orders', ['product_category', 'product_id'], 'product_category'));
     }
 
-    /*
     public function testHasForeignKey(): void
     {
         // Columns are missing and reversed
@@ -211,6 +210,7 @@ class SchemaDialectTest extends TestCase
         $this->assertTrue($this->dialect->hasForeignKey('orders', ['product_category', 'product_id']));
     }
 
+    /*
     public function testHasForeignKeyNamed(): void
     {
         // TODO this could be resolved if we use the key reflection logic from phinx/migrations
