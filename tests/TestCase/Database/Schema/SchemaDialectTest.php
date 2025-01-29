@@ -169,7 +169,6 @@ class SchemaDialectTest extends TestCase
         $this->assertArrayHasKey('collation', $result);
     }
 
-    /*
     public function testHasColumn(): void
     {
         $this->assertFalse($this->dialect->hasColumn('orders', 'nope'));
@@ -202,6 +201,7 @@ class SchemaDialectTest extends TestCase
         $this->assertTrue($this->dialect->hasIndex('orders', ['product_category', 'product_id'], 'product_category'));
     }
 
+    /*
     public function testHasForeignKey(): void
     {
         // Columns are missing and reversed
