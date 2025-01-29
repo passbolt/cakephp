@@ -983,7 +983,10 @@ class FormHelperTest extends TestCase
     {
         $this->View->setRequest($this->View->getRequest()->withAttribute('csrfToken', 'testKey'));
         $encoding = strtolower(Configure::read('App.encoding'));
-        $result = $this->Form->create($this->article, [
+
+        $article = new Article();
+        $article->requireFieldPresence(true);
+        $result = $this->Form->create($article, [
             'url' => '/articles/publish',
         ]);
         $expected = [
@@ -2813,6 +2816,17 @@ class FormHelperTest extends TestCase
             '/div',
         ];
         $this->assertHtml($expected, $result);
+    }
+
+    public function testControlEntityWithRequirePresence(): void
+    {
+        $article = new Article();
+        $article->requireFieldPresence(true);
+        $this->Form->create($article);
+        $this->Form->control('title');
+
+        // We only need to check that Cake\Datasource\Exception\MissingPropertyException is not thrown
+        $this->expectNotToPerformAssertions();
     }
 
     /**
