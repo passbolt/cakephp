@@ -903,6 +903,22 @@ class MarshallerTest extends TestCase
         $this->assertTrue($result->isDirty('tags'), 'Modified prop should be dirty');
         $this->assertSame(0, $result->tags[0]->_joinData->active);
         $this->assertSame(1, $result->tags[1]->_joinData->active);
+
+        $entity = new Entity();
+        $entity->requireFieldPresence(true);
+        // MissingPropertyException should not be thrown for `tags` field
+        $marshall->merge($entity, $data, ['associated' => ['Tags._joinData']]);
+
+        $inner = new Entity(['id' => 1]);
+        $inner->requireFieldPresence(true);
+        $entity = new Entity([
+            'tags' => [
+                $inner,
+            ],
+        ]);
+        $entity->requireFieldPresence(true);
+        // MissingPropertyException should not be thrown for `_joinData` field
+        $marshall->merge($entity, $data, ['associated' => ['Tags._joinData']]);
     }
 
     /**
@@ -1336,6 +1352,11 @@ class MarshallerTest extends TestCase
         $this->assertEquals($data + ['body' => 'My Content'], $result->toArray());
         $this->assertTrue($result->isDirty(), 'Should be a dirty entity.');
         $this->assertFalse($result->isNew(), 'Should not change the entity state');
+
+        $entity = new Entity();
+        $entity->requireFieldPresence(true);
+        // MissingPropertyException should not be thrown
+        $marshall->merge($entity, $data, []);
     }
 
     /**
