@@ -347,4 +347,33 @@ class MysqlTest extends TestCase
         $expected = '`Model`.`näme Datum` AS `y`';
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * Tests value quoting
+     */
+    public function testQuote(): void
+    {
+        $driver = ConnectionManager::get('test')->getDriver();
+        $this->skipIf(!$driver instanceof Mysql);
+
+        $result = $driver->quote('name');
+        $expected = "'name'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote('Model.*');
+        $expected = "'Model.*'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O'hare");
+        $expected = "'O\\'hare'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O''hare");
+        $expected = "'O\\'\\'hare'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O\slash");
+        $expected = "'O\\\\slash'";
+        $this->assertEquals($expected, $result);
+    }
 }
