@@ -356,6 +356,7 @@ class SqliteTest extends TestCase
      */
     public function testQuote(): void
     {
+        $this->skipIf(!extension_loaded('pdo_sqlite'), 'Skipping as SQLite extension is missing');
         $driver = new Sqlite();
 
         $result = $driver->quote('name');
