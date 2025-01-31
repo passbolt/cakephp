@@ -791,9 +791,10 @@ class EntityTest extends TestCase
         $this->assertFalse($entity->isDirty('title'));
 
         $entity->set('title', 'Foo');
-        $this->assertTrue($entity->isDirty('title'));
+        // Not dirty as the value set is the same as the existing value
+        $this->assertFalse($entity->isDirty('title'));
 
-        $entity->set('title', 'Foo');
+        $entity->set('title', 'Bar');
         $this->assertTrue($entity->isDirty('title'));
 
         $entity->set('something', 'else');
