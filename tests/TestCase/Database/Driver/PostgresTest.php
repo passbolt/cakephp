@@ -237,4 +237,33 @@ class PostgresTest extends TestCase
 
         $this->assertFalse($driver->supports(DriverFeatureEnum::DISABLE_CONSTRAINT_WITHOUT_TRANSACTION));
     }
+
+    /**
+     * Tests value quoting
+     */
+    public function testQuote(): void
+    {
+        $driver = ConnectionManager::get('test')->getDriver();
+        $this->skipIf(!$driver instanceof Postgres);
+
+        $result = $driver->quote('name');
+        $expected = "'name'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote('Model.*');
+        $expected = "'Model.*'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O'hare");
+        $expected = "'O''hare'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O''hare");
+        $expected = "'O''''hare'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O\slash");
+        $expected = "'O\slash'";
+        $this->assertEquals($expected, $result);
+    }
 }
