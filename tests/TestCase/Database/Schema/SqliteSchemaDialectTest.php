@@ -27,8 +27,6 @@ use Cake\TestSuite\TestCase;
 use PDO;
 use PHPUnit\Framework\Attributes\DataProvider;
 
-use function Cake\Collection\collection;
-
 /**
  * Test case for Sqlite Schema Dialect.
  */
