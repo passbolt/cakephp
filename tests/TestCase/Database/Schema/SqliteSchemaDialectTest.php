@@ -543,8 +543,16 @@ SQL;
         $connection = ConnectionManager::get('test');
         $this->_createTables($connection);
 
-        $schema = new SchemaCollection($connection);
-        $result = $schema->describe('schema_articles');
+        $dialect = $connection->getDriver()->schemaDialect();
+        $result = $dialect->describe('schema_articles');
+
+        // Includes unique keys.
+        $indexes = $dialect->describeIndexes('schema_articles');
+        $this->assertCount(3, $indexes);
+
+        $foreignKeys = $dialect->describeForeignKeys('schema_articles');
+        $this->assertCount(1, $foreignKeys);
+
         $this->assertInstanceOf(TableSchema::class, $result);
         $expected = [
             'primary' => [
@@ -576,14 +584,26 @@ SQL;
         $this->assertCount(4, $result->constraints());
         $this->assertEquals($expected['primary'], $result->getConstraint('primary'));
         $this->assertEquals(
-            $expected['title_idx'],
-            $result->getConstraint('title_idx'),
-        );
-        $this->assertEquals(
             $expected['author_id_0_fk'],
             $result->getConstraint('author_id_0_fk'),
         );
+
+        $authorIdFk = $foreignKeys[0];
+        $expectedAuthorIdFk = $expected['author_id_0_fk'];
+        $this->assertEquals('author_id_0_fk', $authorIdFk['name']);
+
+        unset($authorIdFk['name']);
+        $this->assertEquals($expectedAuthorIdFk, $authorIdFk);
+
+        $this->assertEquals(
+            $expected['title_idx'],
+            $result->getConstraint('title_idx'),
+        );
+
         $this->assertEquals($expected['unique_id_idx'], $result->getConstraint('unique_id_idx'));
+        // Compare with describeIndexes result
+        $uniqueIdIdx = $indexes[0];
+        $this->assertEquals($expected['unique_id_idx'] + ['name' => 'unique_id_idx'], $uniqueIdIdx);
 
         $this->assertCount(1, $result->indexes());
         $expected = [
@@ -592,6 +612,11 @@ SQL;
             'length' => [],
         ];
         $this->assertEquals($expected, $result->getIndex('created_idx'));
+
+        // Compare with describeIndexes result
+        $createdIdx = $indexes[1];
+        $expected['name'] = 'created_idx';
+        $this->assertEquals($expected, $createdIdx);
 
         $schema = new SchemaCollection($connection);
         $result = $schema->describe('schema_no_rowid_pk');
@@ -658,11 +683,19 @@ SQL;
                 'length' => [],
             ],
         ];
-        foreach ($expected as $name => $constraint) {
-            $this->assertSame($constraint, $result->getConstraint($name));
-        }
         $this->assertCount(7, $result->constraints());
 
+        // Because all our 'constraints' are unique indexes
+        // they are treated as indexes by the basic reflection API
+        $indexes = $dialect->describeIndexes('schema_unique_constraint_variations');
+        $this->assertCount(6, $indexes);
+        foreach ($indexes as $index) {
+            $expectedIndex = $expected[$index['name']];
+            unset($index['name']);
+            $this->assertEquals($expectedIndex, $index);
+        }
+
+        // No indexes in the TableSchema API
         $this->assertEmpty($result->indexes());
     }
 
@@ -674,8 +707,9 @@ SQL;
         $connection = ConnectionManager::get('test');
         $this->_createTables($connection);
 
-        $schema = new SchemaCollection($connection);
-        $result = $schema->describe('schema_foreign_key_variations');
+        /** @var \Cake\Database\Schema\SqliteSchemaDialect  $dialect */
+        $dialect = $connection->getDriver()->schemaDialect();
+        $result = $dialect->describe('schema_foreign_key_variations');
         $this->assertInstanceOf(TableSchema::class, $result);
 
         $expected = [
@@ -718,6 +752,120 @@ SQL;
             $this->assertSame($constraint, $result->getConstraint($name));
         }
         $this->assertCount(3, $result->constraints());
+
+        $foreignKeys = $dialect->describeForeignKeys('schema_foreign_key_variations');
+        $this->assertCount(2, $foreignKeys);
+        foreach ($foreignKeys as $foreignKey) {
+            $expectedForeignKey = $expected[$foreignKey['name']];
+            unset($foreignKey['name']);
+            $this->assertEquals($expectedForeignKey, $foreignKey);
+        }
+    }
+
+    public function testDescribeColumns(): void
+    {
+        $connection = ConnectionManager::get('test');
+        $this->_createTables($connection);
+        /** @var \Cake\Database\Schema\SqliteSchemaDialect  $dialect */
+        $dialect = $connection->getDriver()->schemaDialect();
+
+        $result = $dialect->describeColumns('schema_articles');
+        $expected = [
+            [
+                'name' => 'id',
+                'type' => 'integer',
+                'null' => false,
+                'default' => null,
+                'length' => null,
+                'comment' => null,
+                'unsigned' => false,
+                'autoIncrement' => true,
+            ],
+            [
+                'name' => 'title',
+                'type' => 'string',
+                'null' => true,
+                'default' => "Let 'em eat cake",
+                'length' => 20,
+                'comment' => null,
+            ],
+            [
+                'name' => 'body',
+                'type' => 'text',
+                'null' => true,
+                'default' => null,
+                'length' => null,
+                'comment' => null,
+            ],
+            [
+                'name' => 'author_id',
+                'type' => 'integer',
+                'null' => false,
+                'default' => null,
+                'length' => 11,
+                'unsigned' => false,
+                'comment' => null,
+            ],
+            [
+                'name' => 'unique_id',
+                'type' => 'integer',
+                'null' => false,
+                'default' => null,
+                'length' => 11,
+                'unsigned' => false,
+                'comment' => null,
+            ],
+            [
+                'name' => 'published',
+                'type' => 'boolean',
+                'null' => true,
+                'default' => 0,
+                'length' => null,
+                'comment' => null,
+            ],
+            [
+                'name' => 'created',
+                'type' => 'datetime',
+                'null' => true,
+                'default' => null,
+                'length' => null,
+                'comment' => null,
+            ],
+            [
+                'name' => 'field1',
+                'type' => 'string',
+                'null' => true,
+                'default' => null,
+                'length' => 10,
+                'comment' => null,
+            ],
+            [
+                'name' => 'field2',
+                'type' => 'string',
+                'null' => true,
+                'default' => 'NULL',
+                'length' => 10,
+                'comment' => null,
+            ],
+            [
+                'name' => 'location',
+                'type' => 'point',
+                'null' => true,
+                'default' => null,
+                'length' => null,
+                'comment' => null,
+            ],
+        ];
+        $this->assertEquals($expected, $result);
+
+        // Test overlap with TableSchema
+        $schema = $dialect->describe('schema_articles');
+        foreach ($expected as $field) {
+            $schemaField = $schema->getColumn($field['name']);
+            $schemaAttrs = array_intersect_key($schemaField, $field);
+            $expectedAttrs = array_intersect_key($field, $schemaAttrs);
+            $this->assertEquals($expectedAttrs, $schemaAttrs);
+        }
     }
 
     /**
