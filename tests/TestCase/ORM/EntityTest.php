@@ -80,6 +80,15 @@ class EntityTest extends TestCase
         $this->assertSame('sample', $entity->get('0'));
     }
 
+    public function testEntitySetException(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Cannot set an empty field');
+
+        $entity = new Entity();
+        $entity->set(['' => 'value']);
+    }
+
     /**
      * Test that getOriginal() retains falsey values.
      */
