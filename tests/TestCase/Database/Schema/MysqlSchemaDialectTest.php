@@ -364,8 +364,8 @@ SQL;
         $connection = ConnectionManager::get('test');
         $this->_createTables($connection);
 
-        $schema = new SchemaCollection($connection);
-        $result = $schema->describe('schema_articles');
+        $dialect = $connection->getDriver()->schemaDialect();
+        $result = $dialect->describe('schema_articles');
         $this->assertInstanceOf(TableSchema::class, $result);
         $expected = [
             'id' => [
@@ -397,6 +397,16 @@ SQL;
                 'collate' => 'utf8_general_ci',
             ],
             'author_id' => [
+                'type' => 'integer',
+                'null' => false,
+                'unsigned' => false,
+                'default' => null,
+                'length' => null,
+                'precision' => null,
+                'comment' => null,
+                'autoIncrement' => null,
+            ],
+            'unique_id' => [
                 'type' => 'integer',
                 'null' => false,
                 'unsigned' => false,
@@ -466,6 +476,16 @@ SQL;
                 $result->getColumn($field),
                 'Field definition does not match for ' . $field,
             );
+        }
+
+        // Compare with describeColumns as well
+        $columns = $dialect->describeColumns('schema_articles');
+        foreach ($columns as $column) {
+            $this->assertArrayHasKey($column['name'], $expected);
+            $expectedItem = $expected[$column['name']];
+            $expectedFields = array_intersect_key($expectedItem, $column);
+            $resultFields = array_intersect_key($column, $expectedFields);
+            $this->assertEquals($expectedFields, $resultFields);
         }
     }
 
@@ -560,8 +580,8 @@ SQL;
         $connection = ConnectionManager::get('test');
         $this->_createTables($connection);
 
-        $schema = new SchemaCollection($connection);
-        $result = $schema->describe('schema_articles');
+        $dialect = $connection->getDriver()->schemaDialect();
+        $result = $dialect->describe('schema_articles');
         $this->assertInstanceOf(TableSchema::class, $result);
 
         $this->assertCount(4, $result->constraints());
@@ -593,6 +613,11 @@ SQL;
                 ],
                 'length' => [],
             ],
+            'author_idx' => [
+                'type' => 'index',
+                'columns' => ['author_id'],
+                'length' => [],
+            ],
         ];
 
         $this->assertEquals($expected['primary'], $result->getConstraint('primary'));
@@ -605,12 +630,36 @@ SQL;
         $this->assertEquals($expected['unique_id_idx'], $result->getConstraint('unique_id_idx'));
 
         $this->assertCount(1, $result->indexes());
-        $expected = [
-            'type' => 'index',
-            'columns' => ['author_id'],
-            'length' => [],
-        ];
-        $this->assertEquals($expected, $result->getIndex('author_idx'));
+        $this->assertEquals($expected['author_idx'], $result->getIndex('author_idx'));
+
+        // Compare with describeIndexes() which includes indexes + uniques
+        $indexes = $dialect->describeIndexes('schema_articles');
+        foreach ($indexes as $index) {
+            $this->assertArrayHasKey($index['name'], $expected);
+            $expectedItem = $expected[$index['name']];
+            $expectedFields = array_intersect_key($expectedItem, $index);
+            $resultFields = array_intersect_key($index, $expectedFields);
+
+            $this->assertNotEmpty($resultFields);
+            $this->assertEquals($expectedFields, $resultFields);
+        }
+
+        // Compare describeForeignKeys()
+        $keys = $dialect->describeForeignKeys('schema_articles');
+        $isMariaDb = ConnectionManager::get('test')->getDriver()->isMariaDb();
+        foreach ($keys as $foreignKey) {
+            $name = $foreignKey['name'];
+            if ($name === 'author_idx' && $isMariaDb) {
+                $name = 'schema_articles_ibfk_1';
+            }
+            $this->assertArrayHasKey($name, $expected);
+            $expectedItem = $expected[$name];
+            $expectedFields = array_intersect_key($expectedItem, $foreignKey);
+            $resultFields = array_intersect_key($foreignKey, $expectedFields);
+
+            $this->assertNotEmpty($resultFields);
+            $this->assertEquals($expectedFields, $resultFields);
+        }
     }
 
     /**
@@ -691,10 +740,10 @@ SQL;
         $connection = ConnectionManager::get('test');
         $this->_createTables($connection);
 
-        $schema = new SchemaCollection($connection);
-        $result = $schema->describe('schema_articles');
-        $this->assertArrayHasKey('engine', $result->getOptions());
-        $this->assertArrayHasKey('collation', $result->getOptions());
+        $dialect = $connection->getDriver()->schemaDialect();
+        $result = $dialect->describeOptions('schema_articles');
+        $this->assertArrayHasKey('engine', $result);
+        $this->assertArrayHasKey('collation', $result);
     }
 
     public function testDescribeNonPrimaryAutoIncrement(): void
