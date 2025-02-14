@@ -381,8 +381,8 @@ SQL;
         $connection = ConnectionManager::get('test');
         $this->_createTables($connection);
 
-        $schema = new SchemaCollection($connection);
-        $result = $schema->describe('schema_articles');
+        $dialect = $connection->getDriver()->schemaDialect();
+        $result = $dialect->describe('schema_articles');
         $expected = [
             'id' => [
                 'type' => 'biginteger',
@@ -421,6 +421,16 @@ SQL;
                 'unsigned' => null,
                 'autoIncrement' => null,
                 'comment' => null,
+            ],
+            'unique_id' => [
+                'type' => 'integer',
+                'null' => false,
+                'unsigned' => null,
+                'default' => null,
+                'length' => 10,
+                'precision' => null,
+                'comment' => null,
+                'autoIncrement' => null,
             ],
             'published' => [
                 'type' => 'boolean',
@@ -515,6 +525,19 @@ SQL;
             $this->assertSame($definition['length'], $column['length']);
             $this->assertSame($definition['precision'], $column['precision']);
         }
+
+        // Compare with describeColumns()
+        $columns = $dialect->describeColumns('schema_articles');
+        foreach ($columns as $column) {
+            $name = $column['name'];
+            $this->assertArrayHasKey($name, $expected);
+            $expectedItem = $expected[$name];
+            $expectedFields = array_intersect_key($expectedItem, $column);
+            $resultFields = array_intersect_key($column, $expectedFields);
+
+            $this->assertNotEmpty($resultFields);
+            $this->assertEquals($expectedFields, $resultFields);
+        }
     }
 
     /**
@@ -564,8 +587,8 @@ SQL;
         $connection = ConnectionManager::get('test');
         $this->_createTables($connection);
 
-        $schema = new SchemaCollection($connection);
-        $result = $schema->describe('schema_articles');
+        $dialect = $connection->getDriver()->schemaDialect();
+        $result = $dialect->describe('schema_articles');
 
         $this->assertInstanceOf(TableSchema::class, $result);
         $this->assertCount(4, $result->constraints());
@@ -601,13 +624,42 @@ SQL;
         $this->assertEquals($expected['author_idx'], $result->getConstraint('author_idx'));
         $this->assertEquals($expected['unique_id_idx'], $result->getConstraint('unique_id_idx'));
 
+        // Compare describeForeignKeys()
+        $keys = $dialect->describeForeignKeys('schema_articles');
+        $this->assertCount(1, $keys);
+        foreach ($keys as $foreignKey) {
+            $name = $foreignKey['name'];
+            $this->assertArrayHasKey($name, $expected);
+            $expectedItem = $expected[$name];
+            $expectedFields = array_intersect_key($expectedItem, $foreignKey);
+            $resultFields = array_intersect_key($foreignKey, $expectedFields);
+
+            $this->assertNotEmpty($resultFields);
+            $this->assertEquals($expectedFields, $resultFields);
+        }
+
         $this->assertCount(1, $result->indexes());
-        $expected = [
+        $authorIdx = [
             'type' => 'index',
             'columns' => ['author_id'],
             'length' => [],
         ];
-        $this->assertEquals($expected, $result->getIndex('author_idx'));
+        $this->assertEquals($authorIdx, $result->getIndex('author_idx'));
+
+        // Compare with describeIndexes() which includes indexes + uniques
+        $expected['author_idx'] = $authorIdx;
+        $indexes = $dialect->describeIndexes('schema_articles');
+        $this->assertCount(4, $indexes);
+        foreach ($indexes as $index) {
+            $name = $index['name'];
+            $this->assertArrayHasKey($name, $expected);
+            $expectedItem = $expected[$name];
+            $expectedFields = array_intersect_key($expectedItem, $index);
+            $resultFields = array_intersect_key($index, $expectedFields);
+
+            $this->assertNotEmpty($resultFields);
+            $this->assertEquals($expectedFields, $resultFields);
+        }
     }
 
     /**
