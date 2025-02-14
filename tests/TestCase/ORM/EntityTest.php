@@ -21,6 +21,7 @@ use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use Exception;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use stdClass;
 use TestApp\Model\Entity\Extending;
 use TestApp\Model\Entity\NonExtending;
@@ -1446,11 +1447,16 @@ class EntityTest extends TestCase
 
     /**
      * Tests the entity's __toString method
+     *
+     * @deprecated
      */
+    #[WithoutErrorHandler]
     public function testToString(): void
     {
-        $entity = new Entity(['foo' => 1, 'bar' => 2]);
-        $this->assertEquals(json_encode($entity, JSON_PRETTY_PRINT), (string)$entity);
+        $this->deprecated(function () {
+            $entity = new Entity(['foo' => 1, 'bar' => 2]);
+            $this->assertEquals(json_encode($entity, JSON_PRETTY_PRINT), (string)$entity);
+        });
     }
 
     /**
