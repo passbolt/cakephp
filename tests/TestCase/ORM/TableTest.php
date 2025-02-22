@@ -2847,7 +2847,7 @@ class TableTest extends TestCase
         $entity = $table->get(1);
 
         $entity->setAccess('*', true);
-        $entity->set($entity->toArray());
+        $entity->patch($entity->toArray());
         $this->assertSame($entity, $table->save($entity));
     }
 
@@ -5629,7 +5629,7 @@ class TableTest extends TestCase
             ['author_id' => 2, 'title' => 'First Article'],
             function ($article) use (&$callbackExecuted): void {
                 $this->assertInstanceOf(EntityInterface::class, $article);
-                $article->set(['published' => 'N', 'body' => 'New body']);
+                $article->patch(['published' => 'N', 'body' => 'New body']);
                 $callbackExecuted = true;
             },
         );
