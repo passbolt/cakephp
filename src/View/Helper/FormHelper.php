@@ -509,8 +509,10 @@ class FormHelper extends Helper
 
         if (
             is_string($options['url']) ||
-            (is_array($options['url']) &&
-            isset($options['url']['_name']))
+                (
+                    is_array($options['url']) &&
+                    (isset($options['url']['_name']) || isset($options['url']['_path']))
+                )
         ) {
             return $options['url'];
         }
