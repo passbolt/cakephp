@@ -816,6 +816,9 @@ class FormHelperTest extends TestCase
             ],
         ];
         $this->assertHtml($expected, $result);
+
+        $result = $this->Form->create(null, ['url' => ['_path' => 'Articles::myAction']]);
+        $this->assertHtml($expected, $result);
     }
 
     /**
