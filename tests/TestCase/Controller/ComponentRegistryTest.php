@@ -44,7 +44,7 @@ class ComponentRegistryTest extends TestCase
     /**
      * setUp
      */
-    public function setUp(): void
+    protected function setUp(): void
     {
         parent::setUp();
         $controller = new Controller(new ServerRequest());
@@ -54,7 +54,7 @@ class ComponentRegistryTest extends TestCase
     /**
      * tearDown
      */
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         unset($this->Components);
