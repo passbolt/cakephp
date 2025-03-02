@@ -88,6 +88,29 @@ class UpdateQueryTest extends TestCase
     }
 
     /**
+     * Test query construction with fields containing spaces.
+     */
+    public function testUpdateSpaceColumnNames(): void
+    {
+        $data = [
+            'Column with spaces' => '1',
+            'Column_without_spaces' => '1',
+        ];
+
+        $query = new UpdateQuery($this->connection);
+        $query->update('example')
+            ->set($data)
+            ->where(['id' => 1]);
+
+        $result = $query->sql();
+        $this->assertQuotedQuery(
+            'UPDATE <example> SET <Column with spaces> = :c0 , <Column_without_spaces> = :c1',
+            $result,
+            !$this->autoQuote
+        );
+    }
+
+    /**
      * Test update with multiple fields.
      */
     public function testUpdateMultipleFields(): void
