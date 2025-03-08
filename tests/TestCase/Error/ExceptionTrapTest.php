@@ -50,7 +50,7 @@ class ExceptionTrapTest extends TestCase
         $this->memoryLimit = ini_get('memory_limit');
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         Log::reset();
