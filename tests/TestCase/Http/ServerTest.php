@@ -73,7 +73,7 @@ class ServerTest extends TestCase
     /**
      * Teardown
      */
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         $_SERVER = $this->server;

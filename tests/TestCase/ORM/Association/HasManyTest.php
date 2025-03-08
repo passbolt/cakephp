@@ -122,7 +122,7 @@ class HasManyTest extends TestCase
         $this->autoQuote = $connection->getDriver()->isAutoQuotingEnabled();
     }
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         ConnectionManager::drop('test_read_write');
