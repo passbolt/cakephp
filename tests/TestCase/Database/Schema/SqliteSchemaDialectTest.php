@@ -34,7 +34,7 @@ class SqliteSchemaDialectTest extends TestCase
 {
     protected PDO $pdo;
 
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
 

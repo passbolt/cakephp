@@ -25,7 +25,7 @@ use Psr\Log\LoggerInterface;
  */
 class LogTraitTest extends TestCase
 {
-    public function tearDown(): void
+    protected function tearDown(): void
     {
         parent::tearDown();
         Log::drop('trait_test');
