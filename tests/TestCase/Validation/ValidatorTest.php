@@ -2994,7 +2994,7 @@ class ValidatorTest extends TestCase
         $this->assertEquals(
             ['test-provider', 'default'],
             $validator->providers(),
-            'Default provider `test-provider` is missing'
+            'Default provider `test-provider` is missing',
         );
     }
 

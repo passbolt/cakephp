@@ -39,12 +39,12 @@ class RuleInvokerTest extends TestCase
                 'message' => function ($entity, $options) {
                     return 'Player count should be ' . $options['count'] . ' not ' . $entity->get('players');
                 },
-            ]
+            ],
         );
         $rulesInvoker->__invoke($entity, []);
         $this->assertEquals(
             ['countPlayers' => 'Player count should be 2 not 1'],
-            $entity->getError('player_id')
+            $entity->getError('player_id'),
         );
     }
 }

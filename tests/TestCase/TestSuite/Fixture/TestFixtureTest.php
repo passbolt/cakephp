@@ -44,7 +44,7 @@ class TestFixtureTest extends TestCase
             {
                 $this->_schema = new TableSchema(
                     'my_table',
-                    []
+                    [],
                 );
             }
         };
