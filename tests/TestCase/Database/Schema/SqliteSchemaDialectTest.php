@@ -454,6 +454,7 @@ SQL;
                 'length' => null,
                 'precision' => null,
                 'comment' => null,
+                'onUpdate' => null,
             ],
             'field1' => [
                 'type' => 'string',
@@ -1132,10 +1133,13 @@ SQL;
     public function testColumnSql(string $name, array $data, string $expected): void
     {
         $driver = $this->_getMockedDriver();
-        $schema = new SqliteSchemaDialect($driver);
+        $dialect = new SqliteSchemaDialect($driver);
 
         $table = (new TableSchema('articles'))->addColumn($name, $data);
-        $this->assertEquals($expected, $schema->columnSql($table, $name));
+        $this->assertEquals($expected, $dialect->columnSql($table, $name));
+
+        $data['name'] = $name;
+        $this->assertEquals($expected, $dialect->columnDefinitionSql($data));
     }
 
     /**
