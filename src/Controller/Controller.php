@@ -30,6 +30,7 @@ use Cake\Event\EventListenerInterface;
 use Cake\Event\EventManagerInterface;
 use Cake\Http\ContentTypeNegotiation;
 use Cake\Http\Exception\NotFoundException;
+use Cake\Http\MimeType;
 use Cake\Http\Response;
 use Cake\Http\ServerRequest;
 use Cake\Log\LogTrait;
@@ -182,7 +183,7 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
     /**
      * View classes for content negotiation.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $viewClasses = [];
 
@@ -307,7 +308,6 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
             return $this->components()->get($name);
         }
 
-        /** @var array<int, array<string, mixed>> $trace */
         $trace = debug_backtrace();
         $parts = explode('\\', static::class);
         trigger_error(
@@ -315,8 +315,8 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
                 'Undefined property `%s::$%s` in `%s` on line %s',
                 array_pop($parts),
                 $name,
-                $trace[0]['file'],
-                $trace[0]['line'],
+                $trace[0]['file'] ?? 'unknown',
+                $trace[0]['line'] ?? 'unknown',
             ),
             E_USER_NOTICE,
         );
@@ -722,7 +722,7 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
      * to participate in negotiation.
      *
      * @see \Cake\Http\ContentTypeNegotiation
-     * @return list<string>
+     * @return array<string>
      */
     public function viewClasses(): array
     {
@@ -778,7 +778,7 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
         // Prefer the _ext route parameter if it is defined.
         $ext = $request->getParam('_ext');
         if ($ext) {
-            $extTypes = (array)($this->response->getMimeType($ext) ?: []);
+            $extTypes = MimeType::getMimeTypes($ext) ?? [];
             foreach ($extTypes as $extType) {
                 if (isset($typeMap[$extType])) {
                     return $typeMap[$extType];

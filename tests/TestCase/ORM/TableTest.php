@@ -2298,8 +2298,7 @@ class TableTest extends TestCase
         ]);
         $listener = function (EventInterface $event, $entity) {
             $event->stopPropagation();
-
-            return $entity;
+            $event->setResult($entity);
         };
         $table->getEventManager()->on('Model.beforeSave', $listener);
         $this->assertSame($data, $table->save($data));
@@ -2330,7 +2329,7 @@ class TableTest extends TestCase
     public function testBeforeSaveException(): void
     {
         $this->expectException(AssertionError::class);
-        $this->expectExceptionMessage('The beforeSave callback must return `false` or `EntityInterface` instance. Got `int` instead.');
+        $this->expectExceptionMessage('The result for the `Model.beforeSave` event must be `false` or `EntityInterface` instance. Got `int` instead.');
 
         $table = $this->getTableLocator()->get('users');
         $data = new Entity([
@@ -2340,8 +2339,7 @@ class TableTest extends TestCase
         ]);
         $listener = function (EventInterface $event, $entity) {
             $event->stopPropagation();
-
-            return 1;
+            $event->setResult(1);
         };
         $table->getEventManager()->on('Model.beforeSave', $listener);
         $table->save($data);
@@ -2849,7 +2847,7 @@ class TableTest extends TestCase
         $entity = $table->get(1);
 
         $entity->setAccess('*', true);
-        $entity->set($entity->toArray());
+        $entity->patch($entity->toArray());
         $this->assertSame($entity, $table->save($entity));
     }
 
@@ -4281,7 +4279,7 @@ class TableTest extends TestCase
 
         $article = $table->find('all')->where(['id' => 1])->contain(['Tags'])->first();
         $this->assertEquals($article->tags[2]->id, $tags[0]->id);
-        $this->assertEqualsCanonicalizing($article->tags[3], $tags[1]);
+        $this->assertEqualsCanonicalizing($article->tags[3]->toArray(), $tags[1]->toArray());
     }
 
     /**
@@ -5631,7 +5629,7 @@ class TableTest extends TestCase
             ['author_id' => 2, 'title' => 'First Article'],
             function ($article) use (&$callbackExecuted): void {
                 $this->assertInstanceOf(EntityInterface::class, $article);
-                $article->set(['published' => 'N', 'body' => 'New body']);
+                $article->patch(['published' => 'N', 'body' => 'New body']);
                 $callbackExecuted = true;
             },
         );
@@ -5809,6 +5807,27 @@ class TableTest extends TestCase
     }
 
     /**
+     * Test that findOrCreate with array data.
+     */
+    public function testFindOrCreateArrayData(): void
+    {
+        $articles = $this->getTableLocator()->get('Articles');
+
+        $firstArticle = $articles->findOrCreate(['title' => 'Some title'], ['body' => 'Some body']);
+        $this->assertFalse($firstArticle->isNew());
+        $this->assertNotNull($firstArticle->id);
+        $this->assertSame('Some title', $firstArticle->title);
+        $this->assertSame('Some body', $firstArticle->body);
+
+        $secondArticle = $articles->findOrCreate(['title' => 'Some title'], ['body' => 'Different body']);
+        $this->assertFalse($secondArticle->isNew());
+        $this->assertNotNull($secondArticle->id);
+        $this->assertSame('Some title', $secondArticle->title);
+        $this->assertEquals($firstArticle->id, $secondArticle->id);
+        $this->assertSame('Some body', $secondArticle->body);
+    }
+
+    /**
      * Test that creating a table fires the initialize event.
      */
     public function testInitializeEvent(): void
@@ -5880,12 +5899,6 @@ class TableTest extends TestCase
         $data = ['username' => 'larry', 'id' => 3];
         $this->assertNotEmpty($validator->validate($data));
 
-        $data = ['username' => 'larry'];
-        $this->assertNotEmpty($validator->validate($data, false));
-
-        $validator->add('username', 'unique', [
-            'rule' => 'validateUnique', 'provider' => 'table',
-        ]);
         $data = ['username' => 'larry'];
         $this->assertNotEmpty($validator->validate($data, false));
     }

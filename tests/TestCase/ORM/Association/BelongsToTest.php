@@ -38,7 +38,7 @@ class BelongsToTest extends TestCase
     /**
      * Fixtures to use.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = ['core.Articles', 'core.Authors', 'core.Comments'];
 

@@ -36,7 +36,7 @@ class TableLocator extends AbstractLocator implements LocatorInterface
     /**
      * Contains a list of locations where table classes should be looked for.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $locations = [];
 
@@ -254,7 +254,7 @@ class TableLocator extends AbstractLocator implements LocatorInterface
             if (!empty($options['connectionName'])) {
                 $connectionName = $options['connectionName'];
             } else {
-                /** @var \Cake\ORM\Table $className */
+                /** @var class-string<\Cake\ORM\Table> $className */
                 $className = $options['className'];
                 $connectionName = $className::defaultConnectionName();
             }

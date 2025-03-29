@@ -97,7 +97,7 @@ abstract class Cell implements EventDispatcherInterface, Stringable
      * Override this property in subclasses to allow
      * which options you want set as properties in your Cell.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_validCellOptions = [];
 

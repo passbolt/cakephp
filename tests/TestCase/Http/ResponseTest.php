@@ -1074,44 +1074,22 @@ class ResponseTest extends TestCase
     public function testWithFileUnknownFileTypeGeneric(): void
     {
         $response = new Response();
-        $new = $response->withFile(CONFIG . 'no_section.ini');
-        $this->assertSame('text/html; charset=UTF-8', $new->getHeaderLine('Content-Type'));
+        file_put_contents(TMP . 'empty', '');
+
+        $new = $response->withFile(TMP . 'empty');
+        $this->assertSame('application/x-empty; charset=binary', $new->getHeaderLine('Content-Type'));
         $this->assertSame(
-            'attachment; filename="no_section.ini"',
+            'attachment; filename="empty"',
             $new->getHeaderLine('Content-Disposition'),
+        );
+        $this->assertSame(
+            'binary',
+            $new->getHeaderLine('Content-Transfer-Encoding'),
         );
         $this->assertSame('bytes', $new->getHeaderLine('Accept-Ranges'));
         $body = $new->getBody();
-        $expected = "some_key = some_value\nbool_key = 1\n";
+        $expected = '';
         $this->assertSame($expected, $body->getContents());
-    }
-
-    /**
-     * test withFile() + opera
-     */
-    public function testWithFileUnknownFileTypeOpera(): void
-    {
-        $_SERVER['HTTP_USER_AGENT'] = 'Opera/9.80 (Windows NT 6.0; U; en) Presto/2.8.99 Version/11.10';
-        $response = new Response();
-
-        $new = $response->withFile(CONFIG . 'no_section.ini');
-        $this->assertSame('application/octet-stream', $new->getHeaderLine('Content-Type'));
-        $this->assertSame(
-            'attachment; filename="no_section.ini"',
-            $new->getHeaderLine('Content-Disposition'),
-        );
-    }
-
-    /**
-     * test withFile() + old IE
-     */
-    public function testWithFileUnknownFileTypeOldIe(): void
-    {
-        $_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (compatible; MSIE 8.0; Windows NT 5.2; Trident/4.0; Media Center PC 4.0; SLCC1; .NET CLR 3.0.04320)';
-        $response = new Response();
-
-        $new = $response->withFile(CONFIG . 'no_section.ini');
-        $this->assertSame('application/force-download', $new->getHeaderLine('Content-Type'));
     }
 
     /**
@@ -1124,7 +1102,7 @@ class ResponseTest extends TestCase
             'download' => false,
         ]);
         $this->assertSame(
-            'text/html; charset=UTF-8',
+            'text/plain; charset=us-ascii',
             $new->getHeaderLine('Content-Type'),
         );
         $this->assertFalse($new->hasHeader('Content-Disposition'));

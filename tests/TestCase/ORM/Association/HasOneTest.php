@@ -37,7 +37,7 @@ class HasOneTest extends TestCase
     /**
      * Fixtures to load
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = ['core.Articles', 'core.Authors', 'core.NullableAuthors', 'core.Users', 'core.Profiles'];
 

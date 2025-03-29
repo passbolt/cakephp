@@ -57,7 +57,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Fixtures used by this test case.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = [];
 
@@ -946,6 +946,7 @@ abstract class TestCase extends BaseTestCase
         }, $reflection->getMethods());
 
         $existingMethods = array_intersect($classMethods, $methods);
+        /** @var list<non-empty-string> $nonExistingMethods */
         $nonExistingMethods = array_diff($methods, $existingMethods);
 
         $builder = $this->getMockBuilder($className)
@@ -968,8 +969,8 @@ abstract class TestCase extends BaseTestCase
             $builder->addMethods($nonExistingMethods);
         }
 
-        /** @var \Cake\ORM\Table $mock */
         $mock = $builder->getMock();
+        assert($mock instanceof Table);
 
         if (empty($options['entityClass']) && $mock->getEntityClass() === Entity::class) {
             $parts = explode('\\', $className);
@@ -1051,7 +1052,7 @@ abstract class TestCase extends BaseTestCase
     /**
      * Get the fixtures this test should use.
      *
-     * @return list<string>
+     * @return array<string>
      */
     public function getFixtures(): array
     {

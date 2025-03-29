@@ -197,7 +197,7 @@ class Message implements JsonSerializable
     /**
      * Available formats to be sent.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $emailFormatAvailable = [self::MESSAGE_TEXT, self::MESSAGE_HTML, self::MESSAGE_BOTH];
 
@@ -234,7 +234,7 @@ class Message implements JsonSerializable
     /**
      * Available encoding to be set for transfer.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $transferEncodingAvailable = [
         '7bit',
@@ -277,7 +277,7 @@ class Message implements JsonSerializable
     /**
      * 8Bit character sets
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $charset8bit = ['UTF-8', 'SHIFT_JIS'];
 
@@ -303,7 +303,7 @@ class Message implements JsonSerializable
     /**
      * Properties that could be serialized
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $serializableProperties = [
         'to', 'from', 'sender', 'replyTo', 'cc', 'bcc', 'subject',
@@ -1299,7 +1299,7 @@ class Message implements JsonSerializable
     /**
      * Generate full message.
      *
-     * @return list<string>
+     * @return array<string>
      */
     protected function generateMessage(): array
     {
@@ -1393,7 +1393,7 @@ class Message implements JsonSerializable
      * Attach non-embedded files by adding file contents inside boundaries.
      *
      * @param string|null $boundary Boundary to use. If null, will default to $this->boundary
-     * @return list<string> An array of lines to add to the message
+     * @return array<string> An array of lines to add to the message
      */
     protected function attachFiles(?string $boundary = null): array
     {
@@ -1430,7 +1430,7 @@ class Message implements JsonSerializable
      * Attach inline/embedded files to the message.
      *
      * @param string|null $boundary Boundary to use. If null, will default to $this->boundary
-     * @return list<string> An array of lines to add to the message
+     * @return array<string> An array of lines to add to the message
      */
     protected function attachInlineFiles(?string $boundary = null): array
     {
@@ -1610,7 +1610,7 @@ class Message implements JsonSerializable
      *
      * @param string|null $message Message to wrap
      * @param int $wrapLength The line length
-     * @return list<string> Wrapped message
+     * @return array<string> Wrapped message
      */
     protected function wrap(?string $message = null, int $wrapLength = self::LINE_LENGTH_MUST): array
     {

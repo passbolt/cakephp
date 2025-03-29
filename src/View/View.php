@@ -217,7 +217,7 @@ class View implements EventDispatcherInterface
     /**
      * List of variables to collect from the associated controller.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_passedVars = [
         'viewVars', 'autoLayout', 'helpers', 'template', 'layout', 'name', 'theme',
@@ -234,14 +234,14 @@ class View implements EventDispatcherInterface
     /**
      * Holds an array of paths.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_paths = [];
 
     /**
      * Holds an array of plugin paths.
      *
-     * @var array<string, list<string>>
+     * @var array<string, array<string>>
      */
     protected array $_pathsForPlugin = [];
 
@@ -270,7 +270,7 @@ class View implements EventDispatcherInterface
     /**
      * Content stack, used for nested templates that all use View::extend();
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_stack = [];
 
@@ -844,7 +844,7 @@ class View implements EventDispatcherInterface
     /**
      * Returns a list of variables available in the current View context
      *
-     * @return list<string> Array of the set view variable names.
+     * @return array<string> Array of the set view variable names.
      */
     public function getVars(): array
     {
@@ -876,7 +876,6 @@ class View implements EventDispatcherInterface
     {
         if (is_array($name)) {
             if (is_array($value)) {
-                /** @var array|false $data Coerce phpstan to accept failure case */
                 $data = array_combine($name, $value);
                 if ($data === false) {
                     throw new CakeException(
@@ -897,7 +896,7 @@ class View implements EventDispatcherInterface
     /**
      * Get the names of all the existing blocks.
      *
-     * @return list<string> An array containing the blocks.
+     * @return array<string> An array containing the blocks.
      * @see \Cake\View\ViewBlock::keys()
      */
     public function blocks(): array
@@ -1539,7 +1538,7 @@ class View implements EventDispatcherInterface
      * and layouts.
      *
      * @param string $basePath Base path on which to get the prefixed one.
-     * @return list<string> Array with all the templates paths.
+     * @return array<string> Array with all the templates paths.
      */
     protected function _getSubPaths(string $basePath): array
     {
@@ -1565,7 +1564,7 @@ class View implements EventDispatcherInterface
      *
      * @param string|null $plugin Optional plugin name to scan for view files.
      * @param bool $cached Set to false to force a refresh of view paths. Default true.
-     * @return list<string> paths
+     * @return array<string> paths
      */
     protected function _paths(?string $plugin = null, bool $cached = true): array
     {

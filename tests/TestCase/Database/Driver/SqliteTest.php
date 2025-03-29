@@ -350,4 +350,33 @@ class SqliteTest extends TestCase
         $expected = '"Model"."näme Datum" AS "y"';
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * Tests value quoting
+     */
+    public function testQuote(): void
+    {
+        $this->skipIf(!extension_loaded('pdo_sqlite'), 'Skipping as SQLite extension is missing');
+        $driver = new Sqlite();
+
+        $result = $driver->quote('name');
+        $expected = "'name'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote('Model.*');
+        $expected = "'Model.*'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O'hare");
+        $expected = "'O''hare'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O''hare");
+        $expected = "'O''''hare'";
+        $this->assertEquals($expected, $result);
+
+        $result = $driver->quote("O\slash");
+        $expected = "'O\slash'";
+        $this->assertEquals($expected, $result);
+    }
 }

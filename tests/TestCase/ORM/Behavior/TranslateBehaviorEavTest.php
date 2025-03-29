@@ -41,7 +41,7 @@ class TranslateBehaviorEavTest extends TestCase
     /**
      * fixtures
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $fixtures = [
         'core.Articles',
@@ -800,7 +800,7 @@ class TranslateBehaviorEavTest extends TestCase
         $this->assertNotEmpty($entity->author->name);
 
         $expected = $table->get(1, ...['contain' => ['Authors']]);
-        $this->assertEqualsCanonicalizing($expected, $result);
+        $this->assertEqualsCanonicalizing($expected->toArray(), $result->toArray());
         $this->assertNotEmpty($entity->author);
         $this->assertNotEmpty($entity->author->name);
     }
@@ -1248,7 +1248,7 @@ class TranslateBehaviorEavTest extends TestCase
 
         $article = $table->get(1);
         foreach ($translations as $lang => $data) {
-            $article->translation($lang)->set($data, ['guard' => false]);
+            $article->translation($lang)->patch($data, ['guard' => false]);
         }
 
         $table->save($article);

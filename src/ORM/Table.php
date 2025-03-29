@@ -232,14 +232,14 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
     /**
      * The name of the field that represents the primary key in the table
      *
-     * @var list<string>|string|null
+     * @var array<string>|string|null
      */
     protected array|string|null $_primaryKey = null;
 
     /**
      * The name of the field that represents a human-readable representation of a row
      *
-     * @var list<string>|string|null
+     * @var array<string>|string|null
      */
     protected array|string|null $_displayField = null;
 
@@ -630,7 +630,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
     /**
      * Returns the primary key field name.
      *
-     * @return list<string>|string
+     * @return array<string>|string
      */
     public function getPrimaryKey(): array|string
     {
@@ -661,7 +661,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
     /**
      * Returns the display field.
      *
-     * @return list<string>|string|null
+     * @return array<string>|string|null
      */
     public function getDisplayField(): array|string|null
     {
@@ -1624,8 +1624,8 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
      * @param \Cake\ORM\Query\SelectQuery|callable|array $search The criteria to find existing
      *   records by. Note that when you pass a query object you'll have to use
      *   the 2nd arg of the method to modify the entity data before saving.
-     * @param callable|null $callback A callback that will be invoked for newly
-     *   created entities. This callback will be called *before* the entity
+     * @param callable|array|null $callback An array of data key/value pairs or a callback that will
+     *   be invoked for newly created entities. This callback will be called *before* the entity
      *   is persisted.
      * @param array<string, mixed> $options The options to use when saving.
      * @return \Cake\Datasource\EntityInterface An entity.
@@ -1633,7 +1633,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
      */
     public function findOrCreate(
         SelectQuery|callable|array $search,
-        ?callable $callback = null,
+        callable|array|null $callback = null,
         array $options = [],
     ): EntityInterface {
         $options = new ArrayObject($options + [
@@ -1658,7 +1658,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
      *
      * @param \Cake\ORM\Query\SelectQuery|callable|array $search The criteria to find an existing record by, or a callable tha will
      *   customize the find query.
-     * @param callable|null $callback A callback that will be invoked for newly
+     * @param callable|array|null $callback Data or a callback that will be invoked for newly
      *   created entities. This callback will be called *before* the entity
      *   is persisted.
      * @param array<string, mixed> $options The options to use when saving.
@@ -1668,7 +1668,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
      */
     protected function _processFindOrCreate(
         SelectQuery|callable|array $search,
-        ?callable $callback = null,
+        callable|array|null $callback = null,
         array $options = [],
     ): EntityInterface|array {
         $query = $this->_getFindOrCreateQuery($search);
@@ -1678,10 +1678,16 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
             return $row;
         }
 
+        $data = $search;
+        if (is_array($callback) && !is_callable($callback)) {
+            $data = $callback + $search;
+            $callback = null;
+        }
+
         $entity = $this->newEmptyEntity();
-        if ($options['defaults'] && is_array($search)) {
-            $accessibleFields = array_combine(array_keys($search), array_fill(0, count($search), true));
-            $entity = $this->patchEntity($entity, $search, ['accessibleFields' => $accessibleFields]);
+        if ($options['defaults'] && is_array($data)) {
+            $accessibleFields = array_combine(array_keys($data), array_fill(0, count($data), true));
+            $entity = $this->patchEntity($entity, $data, ['accessibleFields' => $accessibleFields]);
         }
         if ($callback !== null) {
             $entity = $callback($entity) ?: $entity;
@@ -2029,7 +2035,8 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
                 assert(
                     $result instanceof EntityInterface,
                     sprintf(
-                        'The beforeSave callback must return `false` or `EntityInterface` instance. Got `%s` instead.',
+                        'The result for the `Model.beforeSave` event must be `false` or `EntityInterface` instance.'
+                        . ' Got `%s` instead.',
                         get_debug_type($result),
                     ),
                 );
@@ -2165,7 +2172,13 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
         $success = false;
         if ($statement->rowCount() !== 0) {
             $success = $entity;
-            $entity->set($filteredKeys, ['guard' => false]);
+
+            if (method_exists($entity, 'patch')) {
+                $entity = $entity->patch($filteredKeys, ['guard' => false]);
+            } else {
+                $entity->set($filteredKeys, ['guard' => false]);
+            }
+
             $schema = $this->getSchema();
             $driver = $this->getConnection()->getDriver();
             foreach ($primary as $key => $v) {
@@ -3110,7 +3123,7 @@ class Table implements RepositoryInterface, EventListenerInterface, EventDispatc
      * @param array|null $context Either the validation context or null.
      * @return bool True if the value is unique, or false if a non-scalar, non-unique value was given.
      */
-    public function validateUnique(mixed $value, array $options, ?array $context = null): bool
+    public function validateUnique(mixed $value, array $options = [], ?array $context = null): bool
     {
         if ($context === null) {
             $context = $options;

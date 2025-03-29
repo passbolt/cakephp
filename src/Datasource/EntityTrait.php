@@ -22,6 +22,7 @@ use Cake\ORM\Entity;
 use Cake\Utility\Hash;
 use Cake\Utility\Inflector;
 use InvalidArgumentException;
+use function Cake\Core\deprecationWarning;
 
 /**
  * An entity represents a single result row from a repository. It exposes the
@@ -46,7 +47,7 @@ trait EntityTrait
     /**
      * Holds all fields that have been initially set on instantiation, or after marking as clean
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_originalFields = [];
 
@@ -54,7 +55,7 @@ trait EntityTrait
      * List of field names that should **not** be included in JSON or Array
      * representations of this Entity.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_hidden = [];
 
@@ -63,7 +64,7 @@ trait EntityTrait
      * representations of this Entity. If a field is present in both _hidden and _virtual
      * the field will **not** be in the array/JSON versions of the entity.
      *
-     * @var list<string>
+     * @var array<string>
      */
     protected array $_virtual = [];
 
@@ -197,40 +198,12 @@ trait EntityTrait
      * $entity->set('name', 'Andrew');
      * ```
      *
-     * It is also possible to mass-assign multiple fields to this entity
-     * with one call by passing a hashed array as fields in the form of
-     * field => value pairs
-     *
-     * ### Example:
-     *
-     * ```
-     * $entity->set(['name' => 'andrew', 'id' => 1]);
-     * echo $entity->name // prints andrew
-     * echo $entity->id // prints 1
-     * ```
-     *
      * Some times it is handy to bypass setter functions in this entity when assigning
      * fields. You can achieve this by disabling the `setter` option using the
      * `$options` parameter:
      *
      * ```
      * $entity->set('name', 'Andrew', ['setter' => false]);
-     * $entity->set(['name' => 'Andrew', 'id' => 1], ['setter' => false]);
-     * ```
-     *
-     * Mass assignment should be treated carefully when accepting user input, by default
-     * entities will guard all fields when fields are assigned in bulk. You can disable
-     * the guarding for a single set call with the `guard` option:
-     *
-     * ```
-     * $entity->set(['name' => 'Andrew', 'id' => 1], ['guard' => false]);
-     * ```
-     *
-     * You do not need to use the guard option when assigning fields individually:
-     *
-     * ```
-     * // No need to use the guard option.
-     * $entity->set('name', 'Andrew');
      * ```
      *
      * You can use the `asOriginal` option to set the given field as original, if it wasn't
@@ -246,10 +219,8 @@ trait EntityTrait
      * print_r($entity->getOriginalFields()) // prints ['name', 'id', 'phone_number']
      * ```
      *
-     * @param array<string, mixed>|string $field the name of field to set or a list of
-     * fields with their respective values
-     * @param mixed $value The value to set to the field or an array if the
-     * first argument is also an array, in which case will be treated as $options
+     * @param array|string $field The name of field to set.
+     * @param mixed $value The value to set to the field.
      * @param array<string, mixed> $options Options to be used for setting the field. Allowed option
      * keys are `setter`, `guard` and `asOriginal`
      * @return $this
@@ -258,20 +229,79 @@ trait EntityTrait
     public function set(array|string $field, mixed $value = null, array $options = [])
     {
         if (is_string($field)) {
-            $guard = false;
-            $field = [$field => $value];
-        } else {
-            $guard = true;
-            $options = (array)$value;
+            $options += ['guard' => false];
+
+            return $this->patch([$field => $value], $options);
         }
 
-        $options += ['setter' => true, 'guard' => $guard, 'asOriginal' => false];
+        deprecationWarning(
+            '5.2.0',
+            sprintf(
+                'Passing an array as the first argument to `%s::set()` is deprecated. '
+                . 'Use `%s::patch()` instead.',
+                static::class,
+                static::class,
+            ),
+        );
+
+        return $this->patch($field, (array)$value);
+    }
+
+    /**
+     * Patch (mass-assign) multiple fields to this entity.
+     *
+     * ### Example:
+     *
+     * ```
+     * $entity->patch(['name' => 'andrew', 'id' => 1]);
+     * echo $entity->name // prints andrew
+     * echo $entity->id // prints 1
+     * ```
+     *
+     * Some times it is handy to bypass setter functions in this entity when assigning
+     * fields. You can achieve this by disabling the `setter` option using the
+     * `$options` parameter:
+     *
+     * ```
+     * $entity->patch(['name' => 'Andrew', 'id' => 1], ['setter' => false]);
+     * ```
+     *
+     * Mass assignment should be treated carefully when accepting user input, by default
+     * entities will guard all fields when fields are assigned in bulk. You can disable
+     * the guarding for a single set call with the `guard` option:
+     *
+     * ```
+     * $entity->patch(['name' => 'Andrew', 'id' => 1], ['guard' => false]);
+     * ```
+     *
+     * You can use the `asOriginal` option to set the given field as original, if it wasn't
+     * present when the entity was instantiated.
+     *
+     * ```
+     * $entity = new Entity(['name' => 'andrew', 'id' => 1]);
+     *
+     * $entity->patch(['phone_number' => '555-0134']);
+     * print_r($entity->getOriginalFields()) // prints ['name', 'id']
+     *
+     * $entity->patch(['phone_number' => '555-0134'], ['asOriginal' => true]);
+     * print_r($entity->getOriginalFields()) // prints ['name', 'id', 'phone_number']
+     * ```
+     *
+     * @param array<string, mixed> $values Map of fields with their respective values.
+     * @param array<string, mixed> $options Options to be used for setting the field. Allowed option
+     * keys are `setter`, `guard` and `asOriginal`
+     * @return $this
+     * @throws \InvalidArgumentException
+     */
+    public function patch(array $values, array $options = [])
+    {
+        $options += ['setter' => true, 'guard' => true, 'asOriginal' => false];
 
         if ($options['asOriginal'] === true) {
-            $this->setOriginalField(array_keys($field));
+            $this->setOriginalField(array_keys($values));
         }
 
-        foreach ($field as $name => $value) {
+        foreach ($values as $name => $value) {
             /** @psalm-suppress RedundantCastGivenDocblockType */
             $name = (string)$name;
             if ($name === '') {
@@ -281,8 +311,6 @@ trait EntityTrait
             if ($options['guard'] === true && !$this->isAccessible($name)) {
                 continue;
             }
-
-            $this->setDirty($name, true);
 
             if ($options['setter']) {
                 $setter = static::_accessor($name, 'set');
@@ -300,10 +328,43 @@ trait EntityTrait
                 $this->_original[$name] = $this->_fields[$name];
             }
 
+            // Don't dirty scalar values and objects that didn't
+            // change. Arrays will always be marked as dirty because
+            // the original/updated list could contain references to the
+            // same objects, even though those objects may have changed internally.
+            if ($this->isModified($name, $value)) {
+                $this->setDirty($name, true);
+            }
+
             $this->_fields[$name] = $value;
         }
 
         return $this;
+    }
+
+    /**
+     * Check if the provided value is same as existing value for a field.
+     *
+     * @param string $field The field to check.
+     * @return bool
+     */
+    protected function isModified(string $field, mixed $value): bool
+    {
+        $existing = $this->_fields[$field] ?? null;
+
+        if (($value === null || is_scalar($value)) && $existing === $value) {
+            return false;
+        }
+
+        if (
+            is_object($value)
+            && !($value instanceof EntityInterface)
+            && $existing == $value
+        ) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -548,7 +609,7 @@ trait EntityTrait
     /**
      * Gets the hidden fields.
      *
-     * @return list<string>
+     * @return array<string>
      */
     public function getHidden(): array
     {
@@ -579,7 +640,7 @@ trait EntityTrait
     /**
      * Gets the virtual fields on this entity.
      *
-     * @return list<string>
+     * @return array<string>
      */
     public function getVirtual(): array
     {
@@ -592,7 +653,7 @@ trait EntityTrait
      * The list of visible fields is all standard fields
      * plus virtual fields minus hidden fields.
      *
-     * @return list<string> A list of fields that are 'visible' in all
+     * @return array<string> A list of fields that are 'visible' in all
      *     representations.
      */
     public function getVisible(): array
@@ -820,7 +881,7 @@ trait EntityTrait
      * Returns an array of original fields.
      * Original fields are those that the entity was initialized with.
      *
-     * @return list<string>
+     * @return array<string>
      */
     public function getOriginalFields(): array
     {
@@ -894,7 +955,7 @@ trait EntityTrait
     /**
      * Gets the dirty fields.
      *
-     * @return list<string>
+     * @return array<string>
      */
     public function getDirty(): array
     {
@@ -1359,9 +1420,16 @@ trait EntityTrait
      * Returns a string representation of this object in a human readable format.
      *
      * @return string
+     * @deprecated 5.2.0 Casting an entity to string is deprecated. Use json_encode() instead to get a string representation of the entity.
      */
     public function __toString(): string
     {
+        deprecationWarning(
+            '5.2.0',
+            'Casting an entity to string is deprecated. ' .
+            'Use json_encode() instead to get a string representation of the entity.',
+        );
+
         return (string)json_encode($this, JSON_PRETTY_PRINT);
     }
 

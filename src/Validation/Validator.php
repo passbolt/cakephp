@@ -165,7 +165,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
      *
      * @var bool
      */
-    protected bool $_useI18n = false;
+    protected bool $_useI18n;
 
     /**
      * Contains the validation messages associated with checking the emptiness
@@ -194,8 +194,9 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
      */
     public function __construct()
     {
-        $this->_useI18n = function_exists('\Cake\I18n\__d');
+        $this->_useI18n ??= function_exists('\Cake\I18n\__d');
         $this->_providers = self::$_defaultProviders;
+        $this->_providers['default'] ??= Validation::class;
     }
 
     /**
@@ -323,16 +324,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
      */
     public function getProvider(string $name): object|string|null
     {
-        if (isset($this->_providers[$name])) {
-            return $this->_providers[$name];
-        }
-        if ($name !== 'default') {
-            return null;
-        }
-
-        $this->_providers[$name] = new RulesProvider();
-
-        return $this->_providers[$name];
+        return $this->_providers[$name] ?? null;
     }
 
     /**
@@ -362,7 +354,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Get the list of default providers.
      *
-     * @return list<string>
+     * @return array<string>
      */
     public static function getDefaultProviders(): array
     {
@@ -372,7 +364,7 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
     /**
      * Get the list of providers in this validator.
      *
-     * @return list<string>
+     * @return array<string>
      */
     public function providers(): array
     {
@@ -3181,8 +3173,6 @@ class Validator implements ArrayAccess, IteratorAggregate, Countable
     protected function _processRules(string $field, ValidationSet $rules, array $data, bool $newRecord): array
     {
         $errors = [];
-        // Loading default provider in case there is none
-        $this->getProvider('default');
 
         if (!$this->_useI18n) {
             $message = 'The provided value is invalid';
