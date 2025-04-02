@@ -221,6 +221,14 @@ class BehaviorRegistryTest extends TestCase
         $this->assertTrue($this->Behaviors->hasFinder('renamed'));
     }
 
+    public function testSet()
+    {
+        $this->Behaviors->set('Sluggable', new SluggableBehavior($this->Table, ['replacement' => '_']));
+
+        $this->assertEquals(['replacement' => '_'], $this->Behaviors->get('Sluggable')->getConfig());
+        $this->assertTrue($this->Behaviors->hasMethod('slugify'));
+    }
+
     /**
      * test hasMethod()
      */
