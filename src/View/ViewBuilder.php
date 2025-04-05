@@ -601,7 +601,7 @@ class ViewBuilder implements JsonSerializable
      *
      * There are  limitations for viewVars that are good to know:
      *
-     * - ORM\Query executed and stored as resultset
+     * - ORM\Query executed and stored as result set
      * - SimpleXMLElements stored as associative array
      * - Exceptions stored as strings
      * - Resources, \Closure and \PDO are not supported.

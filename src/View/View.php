@@ -1523,8 +1523,8 @@ class View implements EventDispatcherInterface
     {
         $elementPaths = $this->_getSubPaths(static::TYPE_ELEMENT);
         foreach ($this->_paths($plugin) as $path) {
-            foreach ($elementPaths as $subdir) {
-                yield $path . $subdir . DIRECTORY_SEPARATOR;
+            foreach ($elementPaths as $subDir) {
+                yield $path . $subDir . DIRECTORY_SEPARATOR;
             }
         }
     }

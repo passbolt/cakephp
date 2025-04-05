@@ -1217,7 +1217,7 @@ class TranslateBehaviorEavTest extends TestCase
     }
 
     /**
-     * Tests that iterating a resultset twice when using the translations finder
+     * Tests that iterating a result set twice when using the translations finder
      * will not cause any errors nor information loss
      */
     public function testUseCountInFindTranslations(): void
