@@ -135,7 +135,7 @@ class ResultSetTest extends TestCase
     }
 
     /**
-     * Test converting resultsets into JSON
+     * Test converting result sets into JSON
      */
     public function testJsonSerialize(): void
     {

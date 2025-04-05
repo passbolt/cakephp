@@ -378,7 +378,7 @@ class FormHelper extends Helper
      * - `templateVars` Provide template variables for the formStart template.
      *
      * @param mixed $context The context for which the form is being defined.
-     *   Can be a ContextInterface instance, ORM entity, ORM resultset, or an
+     *   Can be a ContextInterface instance, ORM entity, ORM result set, or an
      *   array of meta data. You can use `null` to make a context-less form.
      * @param array<string, mixed> $options An array of html attributes and options.
      * @return string An formatted opening FORM tag.
