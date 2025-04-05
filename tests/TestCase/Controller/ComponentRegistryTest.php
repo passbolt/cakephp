@@ -22,6 +22,7 @@ use Cake\Controller\ComponentRegistry;
 use Cake\Controller\Controller;
 use Cake\Controller\Exception\MissingComponentException;
 use Cake\Core\Container;
+use Cake\Core\Exception\CakeException;
 use Cake\Event\EventManager;
 use Cake\Http\ServerRequest;
 use Cake\TestSuite\TestCase;
@@ -262,8 +263,8 @@ class ComponentRegistryTest extends TestCase
      */
     public function testUnloadUnknown(): void
     {
-        $this->expectException(MissingComponentException::class);
-        $this->expectExceptionMessage('Component class `FooComponent` could not be found.');
+        $this->expectException(CakeException::class);
+        $this->expectExceptionMessage('Object named `Foo` is not loaded.');
         $this->Components->unload('Foo');
     }
 
