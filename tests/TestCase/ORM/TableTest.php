@@ -1179,7 +1179,7 @@ class TableTest extends TestCase
             'name' => 'test',
             'post_count' => 0,
             'comment_count' => 0,
-            'posts_published' => 0
+            'posts_published' => 0,
         ]);
         $table->save($entity);
         $expression = new QueryExpression(['post_count = post_count + 1']);
