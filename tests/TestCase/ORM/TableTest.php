@@ -1169,6 +1169,24 @@ class TableTest extends TestCase
         $this->assertEquals($expected, $result);
     }
 
+    public function testUpdateExpression(): void
+    {
+        $table = new Table([
+            'table' => 'counter_cache_users',
+            'connection' => $this->connection,
+        ]);
+        $entity = new Entity([
+            'name' => 'test',
+            'post_count' => 0,
+            'comment_count' => 0,
+            'posts_published' => 0
+        ]);
+        $table->save($entity);
+        $expression = new QueryExpression(['post_count = post_count + 1']);
+        $result = $table->updateAll([$expression], ['id' => 1]);
+        $this->assertNotEmpty($result);
+    }
+
     /**
      * Test that exceptions from the Query bubble up.
      */
