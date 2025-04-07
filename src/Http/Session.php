@@ -246,7 +246,7 @@ class Session
             $this->engine($class, $config['handler']);
         }
 
-        $this->_lifetime = $lifetime;
+        $this->_lifetime = (int)ini_get('session.gc_maxlifetime');
         $this->_isCLI = (PHP_SAPI === 'cli' || PHP_SAPI === 'phpdbg');
         session_register_shutdown();
     }
