@@ -303,8 +303,13 @@ class BehaviorRegistryTest extends TestCase
     {
         $this->Behaviors->load('Sluggable');
         $mockedBehavior = Mockery::mock(Behavior::class)
-            ->shouldAllowMockingMethod('findNoSlug')
+            ->shouldAllowMockingMethod('findNoSlug', 'implementedFinders')
             ->makePartial();
+        $mockedBehavior->shouldReceive('implementedFinders')
+            ->once()
+            ->andReturn([
+                'noslug' => 'findNoSlug',
+            ]);
         $this->Behaviors->set('Sluggable', $mockedBehavior);
 
         $query = new SelectQuery($this->Table);
@@ -379,10 +384,20 @@ class BehaviorRegistryTest extends TestCase
     public function testUnload(): void
     {
         $this->Behaviors->load('Sluggable');
+        $this->assertTrue($this->Behaviors->hasFinder('noSlug'));
+
+        $this->Behaviors->load('Validation');
+        $this->assertTrue($this->Behaviors->hasMethod('customValidationRule'));
+
+        $this->Behaviors->unload('Validation');
         $this->Behaviors->unload('Sluggable');
 
         $this->assertEmpty($this->Behaviors->loaded());
         $this->assertCount(0, $this->EventManager->listeners('Model.beforeFind'));
+        $this->assertFalse($this->Behaviors->hasFinder('noSlug'));
+        $this->assertFalse($this->Behaviors->hasFinder('noslug'));
+        $this->assertFalse($this->Behaviors->hasMethod('customValidationRule'));
+        $this->assertFalse($this->Behaviors->hasMethod('customvalidationrule'));
     }
 
     /**
