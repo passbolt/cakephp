@@ -275,6 +275,26 @@ class MysqlSchemaDialectTest extends TestCase
         $this->assertSame($expected, $actual);
     }
 
+    public function testConvertColumnBlobDefault(): void
+    {
+        $field = [
+            'Field' => 'field',
+            'Type' => 'binary',
+            'Null' => 'YES',
+            'Default' => "_utf8mb4\\'abc\\'",
+            'Collation' => 'utf8_general_ci',
+            'Comment' => 'Comment section',
+        ];
+        $driver = $this->getMockBuilder(Mysql::class)->getMock();
+        $dialect = new MysqlSchemaDialect($driver);
+
+        $table = new TableSchema('table');
+        $dialect->convertColumnDescription($table, $field);
+
+        $actual = $table->getColumn('field');
+        $this->assertSame('abc', $actual['default']);
+    }
+
     /**
      * Helper method for testing methods.
      *
@@ -536,7 +556,7 @@ CREATE TABLE schema_geometry (
     id INTEGER,
     geo_line LINESTRING,
     geo_geometry GEOMETRY,
-    geo_point POINT,
+    geo_point POINT DEFAULT (ST_GeometryFromText('POINT(10 10)')),
     geo_polygon POLYGON
 )
 SQL;
@@ -577,7 +597,7 @@ SQL;
             'geo_point' => [
                 'type' => 'point',
                 'null' => true,
-                'default' => null,
+                'default' => "st_geometryfromtext('POINT(10 10)')",
                 'precision' => null,
                 'length' => null,
                 'comment' => '',
@@ -586,7 +606,7 @@ SQL;
             'geo_polygon' => [
                 'type' => 'polygon',
                 'null' => true,
-                'default' => null,
+                'default' => '',
                 'precision' => null,
                 'length' => null,
                 'comment' => '',
@@ -878,6 +898,11 @@ SQL;
             ],
             [
                 'body',
+                ['type' => 'text', 'null' => false, 'default' => 'abc'],
+                '`body` TEXT NOT NULL DEFAULT (\'abc\')',
+            ],
+            [
+                'body',
                 ['type' => 'text', 'length' => TableSchema::LENGTH_TINY, 'null' => false],
                 '`body` TINYTEXT NOT NULL',
             ],
@@ -896,11 +921,27 @@ SQL;
                 ['type' => 'text', 'null' => false, 'collate' => 'utf8_unicode_ci'],
                 '`body` TEXT COLLATE utf8_unicode_ci NOT NULL',
             ],
+            // JSON
+            [
+                'config',
+                ['type' => 'json', 'null' => false],
+                '`config` JSON NOT NULL',
+            ],
+            [
+                'config',
+                ['type' => 'json', 'null' => false, 'default' => '{"key":"val"}'],
+                '`config` JSON NOT NULL DEFAULT (\'{"key":"val"}\')',
+            ],
             // Blob / binary
             [
                 'body',
                 ['type' => 'binary', 'null' => false],
                 '`body` BLOB NOT NULL',
+            ],
+            [
+                'body',
+                ['type' => 'binary', 'null' => false, 'default' => 'abc'],
+                "`body` BLOB NOT NULL DEFAULT ('abc')",
             ],
             [
                 'body',
@@ -1144,6 +1185,11 @@ SQL;
                 'p',
                 ['type' => 'polygon'],
                 '`p` POLYGON',
+            ],
+            [
+                'p',
+                ['type' => 'polygon', 'default' => 'POLYGON((30 10,40 40,20 40,10 20,30 10))'],
+                "`p` POLYGON DEFAULT ('POLYGON((30 10,40 40,20 40,10 20,30 10))')",
             ],
             [
                 'p',
@@ -1424,17 +1470,12 @@ SQL;
      */
     public function testCreateSql(): void
     {
-        $driver = $this->_getMockedDriver();
+        $driver = $this->_getMockedDriver('5.6.0');
         $connection = $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
             ->getMock();
         $connection->expects($this->any())->method('getDriver')
             ->willReturn($driver);
-
-        $this->pdo
-            ->expects($this->any())
-            ->method('getAttribute')
-            ->willReturn('5.6.0');
 
         $table = (new TableSchema('posts'))->addColumn('id', [
                 'type' => 'integer',
@@ -1695,7 +1736,7 @@ SQL;
     /**
      * Get a schema instance with a mocked driver/pdo instances
      */
-    protected function _getMockedDriver(): Driver
+    protected function _getMockedDriver($version = '8.0.7'): Driver
     {
         $this->_needsConnection();
 
@@ -1703,19 +1744,23 @@ SQL;
             ->onlyMethods(['quote', 'getAttribute', 'quoteIdentifier'])
             ->disableOriginalConstructor()
             ->getMock();
-            $this->pdo->expects($this->any())
+        $this->pdo->expects($this->any())
             ->method('quote')
             ->willReturnCallback(function ($value) {
                 return "'{$value}'";
             });
 
         $driver = $this->getMockBuilder(Mysql::class)
-            ->onlyMethods(['createPdo'])
+            ->onlyMethods(['createPdo', 'version'])
             ->getMock();
 
         $driver->expects($this->any())
             ->method('createPdo')
             ->willReturn($this->pdo);
+
+        $driver->expects($this->any())
+            ->method('version')
+            ->willReturn($version);
 
         $driver->connect();
 
