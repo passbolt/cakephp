@@ -431,7 +431,6 @@ class Debugger
         }
 
         /**
-         * @psalm-suppress InvalidArgument
          * @phpstan-ignore-next-line
          */
         return implode("\n", $back);

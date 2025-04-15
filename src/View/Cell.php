@@ -190,7 +190,6 @@ abstract class Cell implements EventDispatcherInterface, Stringable
 
             $className = static::class;
             $namePrefix = '\View\Cell\\';
-            /** @psalm-suppress PossiblyFalseOperand */
             $name = substr($className, strpos($className, $namePrefix) + strlen($namePrefix));
             $name = substr($name, 0, -4);
             if (!$builder->getTemplatePath()) {

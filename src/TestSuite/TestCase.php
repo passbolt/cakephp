@@ -318,9 +318,6 @@ abstract class TestCase extends BaseTestCase
     {
         $this->appPluginsToLoad = $plugins;
 
-        /**
-         * @psalm-suppress MissingTemplateParam
-         */
         $app = new class ('') extends BaseApplication
         {
             /**

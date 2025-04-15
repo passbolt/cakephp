@@ -181,7 +181,6 @@ class ComponentRegistry extends ObjectRegistry implements EventDispatcherInterfa
      * Get container instance.
      *
      * @return \Cake\Core\ContainerInterface
-     * @psalm-suppress OverriddenMethodAccess
      */
     protected function getContainer(): ContainerInterface
     {
