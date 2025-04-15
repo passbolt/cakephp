@@ -115,12 +115,6 @@ parameters:
 			path: src/Datasource/QueryInterface.php
 
 		-
-			message: '#^Method Cake\\Error\\ErrorLogger\:\:log\(\) has parameter \$level with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: src/Error/ErrorLogger.php
-
-		-
 			message: '#^Constructor of class Cake\\Error\\Renderer\\ConsoleExceptionRenderer has an unused parameter \$request\.$#'
 			identifier: constructor.unusedParameter
 			count: 1
@@ -261,12 +255,6 @@ parameters:
 		-
 			message: '#^Method Cake\\ORM\\Query\\SelectQuery\:\:find\(\) should return static\(Cake\\ORM\\Query\\SelectQuery\<TSubject of array\|Cake\\Datasource\\EntityInterface\>\) but returns Cake\\ORM\\Query\\SelectQuery\<TSubject of array\|Cake\\Datasource\\EntityInterface\>\.$#'
 			identifier: return.type
-			count: 1
-			path: src/ORM/Query/SelectQuery.php
-
-		-
-			message: '#^PHPDoc tag @return with type Cake\\ORM\\Query\\SelectQuery\<TSubject of array\|Cake\\Datasource\\EntityInterface\> is not subtype of native type static\(Cake\\ORM\\Query\\SelectQuery\<TSubject of array\|Cake\\Datasource\\EntityInterface\>\)\.$#'
-			identifier: return.phpDocType
 			count: 1
 			path: src/ORM/Query/SelectQuery.php
 
@@ -431,9 +419,3 @@ parameters:
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: src/View/Widget/DateTimeWidget.php
-
-		-
-			message: '#^PHPDoc tag @var with type array\<mixed\>\|bool\|int\|string\|null is not subtype of native type mixed\.$#'
-			identifier: varTag.nativeType
-			count: 1
-			path: src/View/XmlView.php
