@@ -1407,7 +1407,6 @@ class FormHelper extends Helper
         $values = [];
         foreach ($enumClass::cases() as $enumClass) {
             /**
-             * @psalm-suppress UndefinedInterfaceMethod
              * @phpstan-ignore-next-line
              */
             $values[$enumClass->value] = $hasLabel ? $enumClass->label()

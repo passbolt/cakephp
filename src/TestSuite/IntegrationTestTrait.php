@@ -201,7 +201,6 @@ trait IntegrationTestTrait
      * Clears the state used for requests.
      *
      * @return void
-     * @psalm-suppress PossiblyNullPropertyAssignmentValue
      */
     #[After]
     public function cleanup(): void
@@ -1511,7 +1510,6 @@ trait IntegrationTestTrait
      */
     protected function getSession(): TestSession
     {
-        /** @psalm-suppress InvalidScalarArgument */
         return new TestSession($_SESSION);
     }
 

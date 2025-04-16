@@ -220,7 +220,6 @@ class CompatDialect extends SchemaDialect
         // SQLite does not support autoincrement on composite keys.
         if ($row['pk'] && !empty($primary)) {
             $existingColumn = $primary['columns'][0];
-            /** @psalm-suppress PossiblyNullOperand */
             $schema->addColumn($existingColumn, ['autoIncrement' => null] + $schema->getColumn($existingColumn));
         }
 

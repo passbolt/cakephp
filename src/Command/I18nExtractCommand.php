@@ -140,7 +140,6 @@ class I18nExtractCommand extends Command
      */
     protected function _getPaths(ConsoleIo $io): void
     {
-        /** @psalm-suppress UndefinedConstant */
         $defaultPaths = array_merge(
             [APP],
             array_values(App::path('templates')),
@@ -538,7 +537,6 @@ class I18nExtractCommand extends Command
     protected function _buildFiles(Arguments $args): void
     {
         $paths = $this->_paths;
-        /** @psalm-suppress UndefinedConstant */
         $paths[] = realpath(APP) . DIRECTORY_SEPARATOR;
 
         usort($paths, function (string $a, string $b) {
@@ -868,7 +866,6 @@ class I18nExtractCommand extends Command
      */
     protected function _isExtractingApp(): bool
     {
-        /** @psalm-suppress UndefinedConstant */
         return $this->_paths === [APP];
     }
 

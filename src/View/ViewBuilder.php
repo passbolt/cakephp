@@ -98,7 +98,7 @@ class ViewBuilder implements JsonSerializable
      * or a fully namespaced classname.
      *
      * @var string|null
-     * @psalm-var class-string<\Cake\View\View>|string|null
+     * @phpstan-var class-string<\Cake\View\View>|string|null
      */
     protected ?string $_className = null;
 

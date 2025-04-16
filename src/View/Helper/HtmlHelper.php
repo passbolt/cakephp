@@ -283,7 +283,6 @@ class HtmlHelper extends Helper
         if ($escapeTitle === true) {
             $title = h($title);
         } elseif (is_string($escapeTitle)) {
-            /** @psalm-suppress PossiblyInvalidArgument */
             $title = htmlentities($title, ENT_QUOTES, $escapeTitle);
         }
 
@@ -536,7 +535,7 @@ class HtmlHelper extends Helper
      * @param array $options Same options as `UrlHelper::script()`.
      * @return string
      * @since 5.2.0
-     * @psalm-param array{imports?: array<string, string>, scopes?: array<string, array<string, array<string, string>>>, integrity?: array<string, string>} $map
+     * @phpstan-param array{imports?: array<string, string>, scopes?: array<string, array<string, array<string, string>>>, integrity?: array<string, string>} $map
      */
     public function importmap(array $map, array $options = []): string
     {
@@ -1099,7 +1098,6 @@ class HtmlHelper extends Helper
             if (!$path && !empty($options['src'])) {
                 $path = $options['src'];
             }
-            /** @psalm-suppress PossiblyNullArgument */
             $options['src'] = $this->Url->assetUrl($path, $options);
         }
 
