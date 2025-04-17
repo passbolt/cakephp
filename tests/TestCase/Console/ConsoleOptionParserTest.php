@@ -25,6 +25,7 @@ use Cake\Console\TestSuite\StubConsoleInput;
 use Cake\Console\TestSuite\StubConsoleOutput;
 use Cake\TestSuite\TestCase;
 use LogicException;
+use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 
 /**
  * ConsoleOptionParserTest
@@ -181,6 +182,24 @@ class ConsoleOptionParserTest extends TestCase
         ]);
         $result = $parser->parse(['-t', 'value'], $this->io);
         $this->assertEquals(['test' => 'value', 'help' => false], $result[0], 'Short parameter did not parse out');
+    }
+
+    /**
+     * test adding an option and using the short value for parsing throws deprecation if conflicting.
+     */
+    #[WithoutErrorHandler]
+    public function testAddOptionShortConflict(): void
+    {
+        $parser = new ConsoleOptionParser('test', false);
+        $parser->addOption('test', [
+            'short' => 't',
+        ]);
+
+        $this->deprecated(function () use ($parser) {
+            $parser->addOption('other', [
+                'short' => 't',
+            ]);
+        });
     }
 
     /**
