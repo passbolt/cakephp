@@ -31,7 +31,7 @@ class DebugContext
     /**
      * @var int
      */
-    private int $maxDepth;
+    private int $maxDepth = 0;
 
     /**
      * @var int

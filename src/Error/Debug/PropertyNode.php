@@ -29,7 +29,7 @@ class PropertyNode implements NodeInterface
     /**
      * @var string|null
      */
-    private ?string $visibility;
+    private ?string $visibility = null;
 
     /**
      * @var \Cake\Error\Debug\NodeInterface
