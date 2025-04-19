@@ -368,7 +368,7 @@ class StringTemplate
             $input = [];
         }
 
-        // Convert and sanitise the inputs
+        // Convert and sanitize the inputs
         if (!is_array($class)) {
             if (is_string($class) && !empty($class)) {
                 $class = explode(' ', $class);

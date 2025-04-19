@@ -532,7 +532,7 @@ class HtmlHelper extends Helper
      * Generate the "importmap" script tag.
      *
      * @param array $map Map array.
-     * @param array $options Same options as `UrlHelper::script()`.
+     * @param array<string, mixed> $options Same options as `UrlHelper::script()`.
      * @return string
      * @since 5.2.0
      * @phpstan-param array{imports?: array<string, string>, scopes?: array<string, array<string, array<string, string>>>, integrity?: array<string, string>} $map
@@ -573,7 +573,7 @@ class HtmlHelper extends Helper
      * Get import paths for the importmap.
      *
      * @param array $map Import map.
-     * @param array $options Options.
+     * @param array<string, mixed> $options Options.
      * @return array
      */
     protected function getImportPaths(array $map, array $options): array
