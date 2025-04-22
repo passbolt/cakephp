@@ -703,6 +703,7 @@ SQL;
 
     public function testDescribeIndexesTextPrimaryKey(): void
     {
+        $this->_needsConnection();
         $connection = ConnectionManager::get('test');
         $dialect = $connection->getDriver()->schemaDialect();
 
