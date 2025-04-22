@@ -623,7 +623,7 @@ SQL;
         $result = $schema->describe('schema_no_rowid_pk');
         $this->assertInstanceOf(TableSchema::class, $result);
 
-        $this->assertSame(['primary'], $result->constraints());
+        $this->assertSame(['sqlite_autoindex_schema_no_rowid_pk_1'], $result->constraints());
 
         $schema = new SchemaCollection($connection);
         $result = $schema->describe('schema_unique_constraint_variations');
@@ -699,6 +699,22 @@ SQL;
 
         // No indexes in the TableSchema API
         $this->assertEmpty($result->indexes());
+    }
+
+    public function testDescribeIndexesTextPrimaryKey(): void
+    {
+        $connection = ConnectionManager::get('test');
+        $dialect = $connection->getDriver()->schemaDialect();
+
+        $connection->execute('create table if not exists t(a text primary key)');
+        $indexes = $dialect->describeIndexes('t');
+        $connection->execute('drop table t');
+
+        $this->assertCount(1, $indexes);
+        $primary = $indexes[0];
+        $this->assertEquals('sqlite_autoindex_t_1', $primary['name']);
+        $this->assertEquals(TableSchema::CONSTRAINT_PRIMARY, $primary['type']);
+        $this->assertEquals(['a'], $primary['columns']);
     }
 
     /**
