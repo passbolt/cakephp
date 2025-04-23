@@ -274,7 +274,10 @@ abstract class TestCase extends BaseTestCase
      */
     protected function getFixtureStrategy(): FixtureStrategyInterface
     {
-        return new TruncateStrategy();
+        /** @var class-string<\Cake\TestSuite\Fixture\FixtureStrategyInterface> $className */
+        $className = Configure::read('TestSuite.fixtureStrategy') ?: TruncateStrategy::class;
+
+        return new $className();
     }
 
     /**
