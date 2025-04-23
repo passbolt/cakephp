@@ -21,7 +21,6 @@ use Cake\ORM\Entity;
 use Cake\TestSuite\TestCase;
 use Exception;
 use InvalidArgumentException;
-use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use stdClass;
 use TestApp\Model\Entity\Extending;
 use TestApp\Model\Entity\NonExtending;
@@ -54,10 +53,9 @@ class EntityTest extends TestCase
         $this->assertSame('bar', $entity->getOriginal('foo'));
     }
 
-    #[WithoutErrorHandler]
     public function testEntitySetDeprecated(): void
     {
-        $this->deprecated(function () {
+        $this->deprecated(function (): void {
             $entity = new Entity();
             $entity->set(['foo' => 'bar']);
         });
@@ -1459,10 +1457,9 @@ class EntityTest extends TestCase
      *
      * @deprecated
      */
-    #[WithoutErrorHandler]
     public function testToString(): void
     {
-        $this->deprecated(function () {
+        $this->deprecated(function (): void {
             $entity = new Entity(['foo' => 1, 'bar' => 2]);
             $this->assertEquals(json_encode($entity, JSON_PRETTY_PRINT), (string)$entity);
         });

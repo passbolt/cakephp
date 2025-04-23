@@ -48,7 +48,6 @@ use DOMXPath;
 use InvalidArgumentException;
 use Mockery;
 use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\Attributes\WithoutErrorHandler;
 use ReflectionProperty;
 use TestApp\Model\Entity\Article;
 use TestApp\Model\Enum\ArticleStatus;
@@ -2618,7 +2617,6 @@ class FormHelperTest extends TestCase
     /**
      * @deprecated
      */
-    #[WithoutErrorHandler]
     public function testWarningForDeprecatedErrorClassConfig(): void
     {
         $this->Form->setConfig('errorClass', 'danger');
@@ -3913,10 +3911,9 @@ class FormHelperTest extends TestCase
     /**
      * @deprecated
      */
-    #[WithoutErrorHandler]
     public function testEnumOptionsDeprecationMessage(): void
     {
-        $this->deprecated(function () {
+        $this->deprecated(function (): void {
             $articlesTable = $this->getTableLocator()->get('Articles');
             $articlesTable->getSchema()->setColumnType(
                 'published',
