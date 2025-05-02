@@ -727,6 +727,7 @@ SQL;
             $this->assertEquals($expectedFields, $resultFields);
         }
         $expected['author_idx'] = $authorIdx;
+        $expected['primary']['constraint'] = 'schema_articles_pkey';
 
         // Compare with describeIndexes() which includes indexes + uniques
         $indexes = $dialect->describeIndexes('schema_articles');
