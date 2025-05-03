@@ -485,8 +485,8 @@ class Controller implements EventListenerInterface, EventDispatcherInterface
 
         if (!$this->isAction($action)) {
             throw new MissingActionException([
-                $controller,
-                $action,
+                'controller' => $controller,
+                'action' => $action,
             ]);
         }
 

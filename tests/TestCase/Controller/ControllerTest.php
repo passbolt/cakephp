@@ -736,15 +736,24 @@ class ControllerTest extends TestCase
      */
     public function testGetActionMissingAction(): void
     {
-        $this->expectException(MissingActionException::class);
-        $this->expectExceptionMessage('Action `TestController::missing()` could not be found, or is not accessible.');
         $url = new ServerRequest([
             'url' => 'test/missing',
             'params' => ['controller' => 'Test', 'action' => 'missing'],
         ]);
 
         $Controller = new TestController($url);
-        $Controller->getAction();
+        try {
+            $Controller->getAction();
+        } catch (MissingActionException $e) {
+            $this->assertEquals(
+                'Action `TestController::missing()` could not be found, or is not accessible.',
+                $e->getMessage(),
+            );
+            $this->assertEquals(
+                ['controller' => 'TestController', 'action' => 'missing'],
+                $e->getAttributes(),
+            );
+        }
     }
 
     /**
