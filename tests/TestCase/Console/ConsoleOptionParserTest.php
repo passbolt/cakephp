@@ -186,6 +186,29 @@ class ConsoleOptionParserTest extends TestCase
     }
 
     /**
+     * test adding an option with a non-string default.
+     */
+    public function testAddOptionNonStringDefault(): void
+    {
+        $parser = new ConsoleOptionParser('test', false);
+        $parser
+            ->addOption('test_int', [
+                'default' => 1,
+            ])
+            ->addOption('test_float', [
+                'default' => 1.5,
+            ])
+            ->addOption('no-default', []);
+
+        $result = $parser->parse([], $this->io);
+        $this->assertEquals(
+            ['test_int' => '1', 'test_float' => '1.5', 'help' => false],
+            $result[0],
+            'Default value did not parse out',
+        );
+    }
+
+    /**
      * test adding an option and using the short value for parsing.
      */
     public function testAddOptionShort(): void
