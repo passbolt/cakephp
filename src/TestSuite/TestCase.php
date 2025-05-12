@@ -38,7 +38,8 @@ use Cake\Utility\Inflector;
 use Closure;
 use Exception;
 use LogicException;
-use Mockery;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
+use Mockery\Adapter\Phpunit\MockeryTestCaseSetUp;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase as BaseTestCase;
 use ReflectionClass;
@@ -51,6 +52,8 @@ use function Cake\Core\pluginSplit;
 abstract class TestCase extends BaseTestCase
 {
     use LocatorAwareTrait;
+    use MockeryPHPUnitIntegration;
+    use MockeryTestCaseSetUp;
     use PHPUnitConsecutiveTrait;
 
     /**
@@ -258,9 +261,6 @@ abstract class TestCase extends BaseTestCase
         $this->getTableLocator()->clear();
         $this->_configure = [];
         $this->_tableLocator = null;
-        if (class_exists(Mockery::class)) {
-            Mockery::close();
-        }
     }
 
     /**
